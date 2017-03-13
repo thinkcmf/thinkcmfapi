@@ -12,6 +12,9 @@ ThinkCMF 5.0 API 开发者预览版
 1. 请先安装ThinkCMF5 https://github.com/thinkcmf/thinkcmf
 2. 再把本项目代码覆盖到 thinkcmf5根目录
 
+### API手册
+http://www.kancloud.cn/thinkcmf/cmf5api
+
 
 QQ群:100828313 (付费)
 
