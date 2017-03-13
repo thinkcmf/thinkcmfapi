@@ -15,7 +15,6 @@ ThinkCMF 5.0 API 开发者预览版
 ### API手册
 http://www.kancloud.cn/thinkcmf/cmf5api
 
-
 QQ群:100828313 (付费)
 
 
