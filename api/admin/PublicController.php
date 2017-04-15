@@ -6,74 +6,14 @@
 // +----------------------------------------------------------------------
 // | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
-namespace api\user\controller;
+namespace api\admin\controller;
 
 use think\Db;
 use think\Validate;
-use cmf\controller\RestBaseController;
+use cmf\controller\RestAdminBaseController;
 
-class PublicController extends RestBaseController
+class PublicController extends RestAdminBaseController
 {
-    // 用户注册
-    public function register()
-    {
-        $validate = new Validate([
-            'username'          => 'require',
-            'password'          => 'require',
-            'verification_code' => 'require'
-        ]);
-
-        $validate->message([
-            'username.require'          => '请输入手机号,邮箱!',
-            'password.require'          => '请输入您的密码!',
-            'verification_code.require' => '请输入数字验证码!'
-        ]);
-
-        $data = $this->request->param();
-        if (!$validate->check($data)) {
-            $this->error($validate->getError());
-        }
-
-        $user = [];
-
-        $userQuery = Db::name("user");
-
-        if (Validate::is($data['username'], 'email')) {
-            $user['user_email'] = $data['username'];
-            //$userQuery          = $userQuery->where('user_email', $data['username']);
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
-            $user['mobile'] = $data['username'];
-            //$userQuery      = $userQuery->where('mobile', $data['username']);
-        } else {
-            $this->error("请输入正确的手机或者邮箱格式!");
-        }
-
-        $errMsg = cmf_check_verification_code($data['username'], $data['verification_code']);
-        if (!empty($errMsg)) {
-            $this->error($errMsg);
-        }
-
-        $findUserCount = $userQuery->count();
-
-        if ($findUserCount > 0) {
-            $this->error("此账号已存在!");
-        }
-
-        $user['create_time'] = time();
-        $user['user_status'] = 1;
-        $user['user_type']   = 2;
-        $user['user_pass']   = cmf_password($data['password']);
-
-        $result = $userQuery->insert($user);
-
-
-        if (empty($result)) {
-            $this->error("注册失败,请重试!");
-        }
-
-        $this->success("注册并激活成功,请登录!");
-
-    }
 
     // 用户登录 TODO 增加最后登录信息记录,如 ip
     public function login()
@@ -165,44 +105,4 @@ class PublicController extends RestBaseController
         $this->success("退出成功!");
     }
 
-    // 用户密码重置
-    public function passwordReset()
-    {
-        $validate = new Validate([
-            'username'          => 'require',
-            'password'          => 'require',
-            'verification_code' => 'require'
-        ]);
-
-        $validate->message([
-            'username.require'          => '请输入手机号,邮箱!',
-            'password.require'          => '请输入您的密码!',
-            'verification_code.require' => '请输入数字验证码!'
-        ]);
-
-        $data = $this->request->param();
-        if (!$validate->check($data)) {
-            $this->error($validate->getError());
-        }
-
-        $userWhere = [];
-        if (Validate::is($data['username'], 'email')) {
-            $userWhere['user_email'] = $data['username'];
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
-            $userWhere['mobile'] = $data['username'];
-        } else {
-            $this->error("请输入正确的手机或者邮箱格式!");
-        }
-
-        $errMsg = cmf_check_verification_code($data['username'], $data['verification_code']);
-        if (!empty($errMsg)) {
-            $this->error($errMsg);
-        }
-
-        $userPass=cmf_password($data['password']);
-        Db::name("user")->where($userWhere)->update(['user_pass'=>$userPass]);
-
-        $this->success("密码重置成功,请使用新密码登录!");
-
-    }
 }
