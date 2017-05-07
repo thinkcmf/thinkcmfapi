@@ -12,6 +12,9 @@
 // 调试模式开关
 define("APP_DEBUG", true);
 
+// 定义 APP 命名空间
+define("APP_NAMESPACE", 'api');
+
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../../api/');
 
