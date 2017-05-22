@@ -123,4 +123,43 @@ class ProfileController extends RestUserBaseController
         $this->success("绑定成功!");
     }
 
+    /**
+     * 用户基本信息获取及修改
+     * @param 请求为GET 获取信息
+     * @param [string] $[field] [要获取的字段名] 可选
+     * @return 带参数,返回某个字段信息。不带参数，返回所有信息
+     * @param 请求为POST 修改信息
+     */
+    public function userInfou($field = ''){
+        if ($this->request->isGet()) {
+            $userId = $this->getUserId();
+            $fieldStr = 'user_type,user_login,mobile,user_email,user_nickname,avatar,signature,user_url,sex,birthday,score,coin,user_status,user_activation_key,create_time,last_login_time,last_login_ip';
+            if (empty($field)) {
+                $userData = Db::name("user")->field($fieldStr)->find($userId);
+            }else{
+                $fieldArr = explode(',',$fieldStr);
+                if (in_array($field,$fieldArr)) {
+                    $userData = Db::name("user")->where('id',$userId)->value($field);
+                }else{
+                    $this->error('您查询的信息不存在！');
+                }
+            }
+            $this->success('获取成功！',$userData);
+        }
+
+        if ($this->request->isPost()) {
+            $userId = $this->getUserId();
+            $fieldStr = 'user_nickname,avatar,signature,user_url,sex,birthday';
+            $data = $this->request->post();
+            if (empty($data)) {
+                $this->error('修改失败，提交表单为空！');
+            }
+            $upData = Db::name("user")->where('id',$userId)->field($fieldStr)->update($data);
+            if ($upData !== false) {
+                $this->success('修改成功！');
+            }else{
+                $this->error('修改失败！');
+            }
+        }
+    }
 }
