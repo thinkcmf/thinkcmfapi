@@ -130,7 +130,7 @@ class ProfileController extends RestUserBaseController
      * @return 带参数,返回某个字段信息。不带参数，返回所有信息
      * @param 请求为POST 修改信息
      */
-    public function userInfou($field = ''){
+    public function userInfo($field = ''){
         if ($this->request->isGet()) {
             $userId = $this->getUserId();
             $fieldStr = 'user_type,user_login,mobile,user_email,user_nickname,avatar,signature,user_url,sex,birthday,score,coin,user_status,user_activation_key,create_time,last_login_time,last_login_ip';
@@ -138,10 +138,16 @@ class ProfileController extends RestUserBaseController
                 $userData = Db::name("user")->field($fieldStr)->find($userId);
             }else{
                 $fieldArr = explode(',',$fieldStr);
-                if (in_array($field,$fieldArr)) {
-                    $userData = Db::name("user")->where('id',$userId)->value($field);
-                }else{
+                $postFieldArr = explode(',',$field);
+                $mixedField = array_intersect($fieldArr,$postFieldArr);
+                if (empty($mixedField)) {
                     $this->error('您查询的信息不存在！');
+                }
+                if (count($mixedField) > 1) {
+                    $fieldStr = implode(',',$mixedField);
+                    $userData = Db::name("user")->field($fieldStr)->find($userId);
+                }else{
+                    $userData = Db::name("user")->where('id',$userId)->value($mixedField);
                 }
             }
             $this->success('获取成功！',$userData);
