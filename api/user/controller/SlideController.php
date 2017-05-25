@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Date: 2017-说明-日
+// | Date: 2017-5-25
 // +----------------------------------------------------------------------
 namespace api\user\controller;
 use api\user\model\SlideModel;
@@ -29,6 +29,7 @@ class SlideController extends RestUserBaseController
         if(!$this -> request -> has('slide') || empty($this -> request -> param('slide'))){
            $this -> error(['code' => 0, 'msg' => '缺少slide参数']);
         }
+
         $map['id'] = $this -> request -> param('slide');
     	$obj = new SlideModel();
     	$data = $obj -> SlideList($map);
