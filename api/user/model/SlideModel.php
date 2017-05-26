@@ -37,7 +37,7 @@ class SlideModel extends Model
      */
     protected function SlideItemModel()
     {
-        return $this->hasOne('SlideItemModel');
+        return $this->hasMany('SlideItemModel');
     }
 
     /**
