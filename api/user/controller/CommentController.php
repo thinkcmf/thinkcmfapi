@@ -37,7 +37,7 @@ class CommentController extends RestUserBaseController
         if(!$this -> request -> has('current') || empty($this -> request -> param('current'))){
             
         	if(!$this -> request -> has('num') || empty($this -> request -> param('num'))){
-	           $sqldata = $comment -> page($map);
+                $sqldata = $comment -> page($map);
 	        }else{
 	        	$num = $this -> request -> param('num');
 	        	$sqldata = $comment -> page($map,$num);
@@ -57,7 +57,7 @@ class CommentController extends RestUserBaseController
         if(!$this -> request -> has('order') || empty($this -> request -> param('order'))){
             $order = 'id desc';
         }else{
-        	$order = $this -> request -> param('order');
+            $order = $this -> request -> param('order');
         }
 
         if(empty($sqldata)){
@@ -68,9 +68,9 @@ class CommentController extends RestUserBaseController
 
     	//数据是否存在
     	if($data -> isEmpty()){
-    		$this -> error(['code' => 0, 'msg' => '评论数据为空']);
+            $this -> error(['code' => 0, 'msg' => '评论数据为空']);
     	}else{
-    		$this -> success(['code' => 1, 'msg' => '评论获取成功!' ,'current' => $sqldata['current'] ,'data' => $data]);
+            $this -> success(['code' => 1, 'msg' => '评论获取成功!' ,'current' => $sqldata['current'] ,'data' => $data]);
     	}
     }
 }
