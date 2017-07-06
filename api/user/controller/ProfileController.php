@@ -126,11 +126,13 @@ class ProfileController extends RestUserBaseController
     /**
      * 用户基本信息获取及修改
      * @param 请求为GET 获取信息
-     * @param [string] $[field] [要获取的字段名] 可选
-     * @return 带参数,返回某个字段信息。不带参数，返回所有信息
+     * @param [string] $[field] [要获取的一个或多个字段名] 可选
+     * @return 带参数,返回某个或多个字段信息。不带参数，返回所有信息
      * @param 请求为POST 修改信息
      */
-    public function userInfo($field = ''){
+    public function userInfo($field = '')
+    {
+        //判断请求为GET，获取信息
         if ($this->request->isGet()) {
             $userId = $this->getUserId();
             $fieldStr = 'user_type,user_login,mobile,user_email,user_nickname,avatar,signature,user_url,sex,birthday,score,coin,user_status,user_activation_key,create_time,last_login_time,last_login_ip';
@@ -152,7 +154,7 @@ class ProfileController extends RestUserBaseController
             }
             $this->success('获取成功！',$userData);
         }
-
+        //判断请求为POST,修改信息
         if ($this->request->isPost()) {
             $userId = $this->getUserId();
             $fieldStr = 'user_nickname,avatar,signature,user_url,sex,birthday';
@@ -166,6 +168,47 @@ class ProfileController extends RestUserBaseController
             }else{
                 $this->error('修改失败！');
             }
+        }
+    }
+    /**
+     * 用户收藏列表相关
+     * @param 请求为GET 获取收藏信息
+     * @param 请求为DELETE 删除信息
+     * @param 待续..
+     */
+    public function userFavorite()
+    {
+        if ($this->request->isGet()) {
+            $userId = $this->getUserId();
+            $userFavoriteModel = model('UserFavorite');
+            $favoriteData = $userFavoriteModel->where('user_id',$userId)->order('create_time','desc')->select();
+            $this->success('请求成功',$favoriteData);
+        }
+
+        if ($this->request->isDelete()) {
+            $param = $this->request->param();
+            $userId = $this->getUserId();
+            if (isset($param['id'])) {
+                $id = $this->request->param('id', 0, 'intval');
+                $result = DB::name('UserFavorite')->where(['id'=>$id,'user_id'=>$userId])->delete();
+                if ($result !== 0 ) {
+                    $this->success('移除成功！');
+                }else{
+                    $this->error('移除的目标不存在！');
+                }
+            }
+
+            if (isset($param['ids'])) {
+                $ids     = $this->request->param('ids/a');
+                $result = DB::name('UserFavorite')->where('user_id',$userId)->delete($ids);
+                if ($result !==0) {
+                    $this->success('移除成功！');
+                }else{
+                    $this->error('移除的目标不存在！');
+                }
+            }
+
+            $this->error('移除失败!');
         }
     }
 }
