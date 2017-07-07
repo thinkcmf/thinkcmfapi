@@ -24,6 +24,9 @@ define('APP_PATH', CMF_ROOT . 'api/');
 // 定义CMF目录
 define('CMF_PATH', __DIR__ . '/../../simplewind/cmf/');
 
+// 定义插件目录
+define('PLUGINS_PATH', __DIR__ . '/../plugins/');
+
 // 定义扩展目录
 define('EXTEND_PATH', __DIR__ . '/../../simplewind/extend/');
 define('VENDOR_PATH', __DIR__ . '/../../simplewind/vendor/');
