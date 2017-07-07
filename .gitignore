@@ -6,3 +6,6 @@
 composer.lock
 /simplewind
 /data
+!/public/api
+/public/
+/think
