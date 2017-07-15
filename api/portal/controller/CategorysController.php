@@ -13,7 +13,7 @@ use cmf\controller\RestBaseController;
 use api\portal\model\PortalCategoryModel;
 use think\Request;
 
-class CategoryController extends RestBaseController
+class CategorysController extends RestBaseController
 {
     protected $categoryModel;
 
@@ -29,7 +29,7 @@ class CategoryController extends RestBaseController
     public function index()
     {
         $params = Request::instance()->get();
-        $datas = $this->categoryModel->getParamsFieldDatas($params);
+        $datas = $this->categoryModel->getDatas($params);
         $this->success('请求成功!',$datas);
     }
 
@@ -42,8 +42,8 @@ class CategoryController extends RestBaseController
     public function read($id)
     {
         $params = Request::instance()->get();
-        $params['ids'] = $id;
-        $datas = $this->categoryModel->getParamsFieldDatas($params);
+        $params['id'] = $id;
+        $datas = $this->categoryModel->getDatas($params);
         $this->success('请求成功!',$datas);
     }
 }

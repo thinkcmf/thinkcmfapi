@@ -17,49 +17,33 @@ class ParamsFilterModel extends Model
     //  关联模型过滤
 	protected $relationFilter = [
     ];
-    //  where查询 表达式白名单
-	protected $whereFilter = [
-                    '=',
-					'<>',
-					'>',
-					'>=',
-					'<',
-					'<=',
-					'like',
-					'not like',
-					'between',
-					'not between',
-					'in',
-					'not in',
-					'null',
-					'not null',
-					'exists',
-					'not exists',
-					'> time',
-					'< time',
-					'>= time',
-					'<= time',
-					'between time',
-					'notbetween time'
-				];
     /**
      * @access public
      * @param array    $params  过滤参数
      * @return array|collection  查询结果
      */
-    public function getParamsFieldDatas($params = '')
+    public function getDatas($params = '')
     {
         if (empty($params)) {
             return $this->select();
         }
-
-        $datas = $this->setCondition($params)->select();
+	    $this->setCondition($params);
+		if (!empty($params['id'])) {
+			$datas = $this->find();
+		} else {
+			$datas = $this->select();
+		}
         if (!empty($params['relation'])) {
             if ($this->isWhite($params['relation'])) {
                 $articles = [];
-                foreach ($datas as $article) {
-                    $code = 'return $article->' . $params["relation"] . ';';
-                    $articles[] = eval($code);
+                if (!empty($params['id'])) {
+	                $code = 'return $datas->' . $params["relation"] . ';';
+	                $articles[] = eval($code);
+                } else {
+	                foreach ($datas as $article) {
+		                $code = 'return $article->' . $params["relation"] . ';';
+		                $articles[] = eval($code);
+	                }
                 }
             }
         }
@@ -156,7 +140,21 @@ class ParamsFilterModel extends Model
             }
         }
 
-        if (!empty($params['ids'])) {
+        if (!empty($params['id'])) {
+            $id = intval($params['id']);
+            if (!empty($id)) {
+                if (empty($model)) {
+                    $_this->where('id',$id);
+                } else {
+                    $condition['id'] = $id;
+                }
+                if (isset($condition)) {
+                    return $condition;
+                } else {
+                    return $_this;
+                }
+            }
+        } elseif (!empty($params['ids'])) {
             $ids = $params['ids'];
             if (is_string($ids)) {
                 $ids = explode(',',$params['ids']);
@@ -172,56 +170,6 @@ class ParamsFilterModel extends Model
                 $_this->where('id','in',$ids);
             } else {
                 $condition['ids'] = ['id','in',$ids];
-            }
-        }
-
-        if (!empty($params['where'])) {
-            foreach ($params['where'] as $key => $value) {
-                $whereField = explode(',',$value);
-                $whereFieldLength = count($whereField);
-                if (!empty($whiteParams)) {
-                    if (in_array($key,$whiteParams)) {
-                        switch ($whereFieldLength) {
-                            case 1:
-                                $where[$key] = $whereField[0];
-                                break;
-                            case 2:
-                                if (in_array($whereField[0],$_this->whereFilter)) {
-                                    $where[$key] = [$whereField[0],$whereField[1]];
-                                }
-                                break;
-                            case 3:
-                                if (in_array($whereField[0],$_this->whereFilter)) {
-                                    $where[$key] = [$whereField[0],[$whereField[1],$whereField[2]]];
-                                }
-                                break;
-                        }
-                    }
-                } else {
-                    switch ($whereFieldLength) {
-                        case 1:
-                            $where[$key] = $whereField[0];
-                            break;
-                        case 2:
-                                if (in_array($whereField[0],$_this->whereFilter)) {
-                                    $where[$key] = [$whereField[0],$whereField[1]];
-                                }
-                            break;
-                        case 3:
-                            if (in_array($whereField[0],$_this->whereFilter)) {
-                                $where[$key] = [$whereField[0],[$whereField[1],$whereField[2]]];
-                            }
-                            break;
-                    }
-                }
-            }
-
-            if (!empty($where)) {
-                if (empty($model)) {
-                    $_this->where($where);
-                } else {
-                    $condition['where'] = $where;
-                }
             }
         }
 

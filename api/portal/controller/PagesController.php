@@ -30,7 +30,7 @@ class PagesController extends RestBaseController
     {
         $params = Request::instance()->get();
         $params['where']['post_type'] = 2;
-        $datas = $this->postModel->getParamsFieldDatas($params);
+        $datas = $this->postModel->getDatas($params);
         $this->success('请求成功!',$datas);
     }
 
@@ -44,8 +44,8 @@ class PagesController extends RestBaseController
     {
         $params = Request::instance()->get();
         $params['where']['post_type'] = 2;
-        $params['ids'] = $id;
-        $datas = $this->postModel->getParamsFieldDatas($params);
+        $params['id'] = $id;
+        $datas = $this->postModel->getDatas($params);
         $this->success('请求成功!',$datas);
     }
 }
