@@ -54,7 +54,7 @@ class PortalPostModel extends ParamsFilterModel
         $limit    = "{$next_id},{$num}";
         $Postlist = PortalCategory::categoryPostIds($category_id);
         $field    = 'id,recommended,user_id,post_like,post_hits,comment_count,create_time,update_time,published_time,post_title,post_excerpt,more';
-        $list     = self::field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select();
+        $list     = self::with('user')->field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select();
         return $list;
     }
 
