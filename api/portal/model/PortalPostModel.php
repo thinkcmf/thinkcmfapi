@@ -10,6 +10,7 @@
 namespace api\portal\model;
 
 use api\common\model\ParamsFilterModel;
+use api\portal\model\PortalCategoryModel as PortalCategory;
 
 class PortalPostModel extends ParamsFilterModel
 {
@@ -18,7 +19,7 @@ class PortalPostModel extends ParamsFilterModel
         'id', 'post_type', 'comment_status', 'is_top', 'recommended',
         'post_hits', 'post_like', 'comment_count', 'published_time',
         'post_title', 'post_keywords', 'post_excerpt', 'post_source',
-        'post_content', 'more','user',
+        'post_content', 'more', 'user', 'category_id',
     ];
 
     /**
@@ -38,6 +39,15 @@ class PortalPostModel extends ParamsFilterModel
         return $list;
     }
 
+    public static function categoryPostList($category_id, $next_id = 0, $num = 10)
+    {
+        $limit = "{$next_id},{$num}";
+        $Postlist = PortalCategory::categoryPostIds($category_id);
+        $field    = 'id,recommended,user_id,post_like,post_hits,comment_count,create_time,update_time,published_time,post_title,post_excerpt,more';
+        $list     = self::field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select();
+        return $list;
+    }
+
     /**
      * 关联 user表
      * @return $this
@@ -45,15 +55,6 @@ class PortalPostModel extends ParamsFilterModel
     public function user()
     {
         return $this->belongsTo('UserModel', 'user_id')->setEagerlyType(1);
-    }
-
-    /**
-     * 关联分类表
-     * @return $this
-     */
-    public function categories()
-    {
-        return $this->belongsToMany('PortalCategoryModel', 'portal_category_post', 'category_id', 'post_id');
     }
 
     /**
