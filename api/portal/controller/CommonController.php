@@ -6,11 +6,11 @@
 // +----------------------------------------------------------------------
 // | Author: wuwu <15093565100@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+namespace api\portal\controller;
 
-use api\wxapp\controller\CommonController;
+use cmf\controller\RestBaseController;
 
-class IndexController extends CommonController
+class CommonController extends RestBaseController
 {
    
 }
