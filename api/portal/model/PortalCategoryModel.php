@@ -10,7 +10,6 @@
 namespace api\portal\model;
 
 use api\common\model\ParamsFilterModel;
-use api\portal\model\PortalCategoryPostModel;
 
 class PortalCategoryModel extends ParamsFilterModel
 {
@@ -37,19 +36,34 @@ class PortalCategoryModel extends ParamsFilterModel
             ->where('status', 1);
     }
 
+    /**
+     * [categoryPostIds 此类文章id数组]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-07-17T15:21:08+0800
+     * @since:    1.0
+     * @param     [type]                   $category_id [分类ID]
+     * @return    [type]                                [文章id数组]
+     */
     public static function categoryPostIds($category_id)
     {
-    	$ids = '';
-        $post_ids = self::relation('PostIds')->field(true)->where('id',$category_id)->find();
+        $ids      = '';
+        $post_ids = self::relation('PostIds')->field(true)->where('id', $category_id)->find();
         foreach ($post_ids['PostIds'] as $key => $id) {
-        	$ids[]= $id['post_id'];
+            $ids[] = $id['post_id'];
         }
         $post_ids['PostIds'] = $ids;
         return $post_ids;
     }
 
-    public function PostIds(){
-    	return self::hasMany('PortalCategoryPostModel','category_id','id');
+    /**
+     * [PostIds 关联]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-07-17T15:20:31+0800
+     * @since:    1.0
+     */
+    public function PostIds()
+    {
+        return self::hasMany('PortalCategoryPostModel', 'category_id', 'id');
     }
 
     /**
