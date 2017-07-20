@@ -6,7 +6,7 @@
 // +----------------------------------------------------------------------
 // | Author: wuwu <15093565100@163.com>
 // +----------------------------------------------------------------------
-namespace api\wxapp\controller;
+namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 
