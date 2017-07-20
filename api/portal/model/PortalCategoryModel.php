@@ -19,13 +19,12 @@
 		];
 		//可查询字段
 		protected $visible = [
-			'id','name','description',
-			'seo_title','seo_keywords',
-			'seo_description','more'
+			'id','name','description','post_count',
+			'seo_title','seo_keywords', 'seo_description',
+			'more'
 		];
-		protected $relationFilter = [
-			'articles'	=>	'hasToMany'
-		];
+		//模型关联方法
+		protected $relationFilter = ['articles'];
 
 		/**
 		 * 基础查询
@@ -54,18 +53,12 @@
 		{
 			$more = json_decode($value,true);
 			if (!empty($more['thumbnail'])) {
-				$more['thumbnail'] = cmf_get_image_preview_url($more['thumbnail']);
+				$more['thumbnail'] = cmf_get_image_url($more['thumbnail']);
 			}
 
 			if (!empty($more['photos'])) {
 				foreach ($more['photos'] as $key => $value) {
-					$more['photos'][$key]['url'] = cmf_get_image_preview_url($value['url']);
-				}
-			}
-
-			if (!empty($more['files'])) {
-				foreach ($more['files'] as $key => $value) {
-					$more['files'][$key]['url'] = cmf_get_image_preview_url($value['url']);
+					$more['photos'][$key]['url'] = cmf_get_image_url($value['url']);
 				}
 			}
 			return $more;

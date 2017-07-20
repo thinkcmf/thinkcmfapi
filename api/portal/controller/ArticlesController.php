@@ -11,7 +11,7 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
-use think\Request;
+use api\portal\model\PortalTagPostModel;
 
 class ArticlesController extends RestBaseController
 {
@@ -19,6 +19,7 @@ class ArticlesController extends RestBaseController
 
     public function __construct(PortalPostModel $postModel)
     {
+    	parent::__construct();
         $this->postModel = $postModel;
     }
     /**
@@ -28,7 +29,14 @@ class ArticlesController extends RestBaseController
      */
     public function index()
     {
-        $params = Request::instance()->get();
+        $params = $this->request->get();
+        if (isset($params['m'])) {
+        	switch ($params['m']) {
+		        case 'recommend':
+		        	$params['where']['recommended'] = 1;
+		        	break;
+	        }
+        }
         $params['where']['post_type'] = 1;
         $datas = $this->postModel->getDatas($params);
         $this->success('请求成功!',$datas);
@@ -42,10 +50,17 @@ class ArticlesController extends RestBaseController
      */
     public function read($id)
     {
-        $params = Request::instance()->get();
-        $params['where']['post_type'] = 1;
-        $params['id'] = $id;
-        $datas = $this->postModel->getDatas($params);
-        $this->success('请求成功!',$datas);
+    	if (intval($id) === 0) {
+		    $this->error('无效的文章id！');
+	    } else {
+		    $params = $this->request->get();
+		    $params['where']['post_type'] = 1;
+		    $params['id'] = $id;
+		    $datas = $this->postModel->getDatas($params);
+		    $tagModel = new PortalTagPostModel;
+		    $postIds = $tagModel->getRelationPostIds($id);
+		    $posts = $this->postModel->getRelationPosts($postIds);
+		    $this->success('请求成功!',[$datas,$posts]);
+	    }
     }
 }

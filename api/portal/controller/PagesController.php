@@ -11,7 +11,6 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
-use think\Request;
 
 class PagesController extends RestBaseController
 {
@@ -19,6 +18,7 @@ class PagesController extends RestBaseController
 
     public function __construct(PortalPostModel $postModel)
     {
+    	parent::__construct();
         $this->postModel = $postModel;
     }
     /**
@@ -28,7 +28,7 @@ class PagesController extends RestBaseController
      */
     public function index()
     {
-        $params = Request::instance()->get();
+        $params = $this->request->get();
         $params['where']['post_type'] = 2;
         $datas = $this->postModel->getDatas($params);
         $this->success('请求成功!',$datas);
@@ -42,7 +42,7 @@ class PagesController extends RestBaseController
      */
     public function read($id)
     {
-        $params = Request::instance()->get();
+	    $params = $this->request->get();
         $params['where']['post_type'] = 2;
         $params['id'] = $id;
         $datas = $this->postModel->getDatas($params);

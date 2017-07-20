@@ -12,8 +12,7 @@
 	class ParamsFilterModel extends Model
 	{
 		//  关联模型过滤
-		protected $relationFilter = [
-		];
+		protected $relationFilter = [];
 		/**
 		 * @access public
 		 * @param array    $params  过滤参数
@@ -34,8 +33,21 @@
 				if ($this->isWhite($params['relation'])) {
 					$articles = [];
 					if (!empty($params['id'])) {
-						$code = 'return $datas->' . $params["relation"] . ';';
-						$articles[] = eval($code);
+						$relationParams = $params;
+						$code = 'return $datas->' . $params["relation"];
+						unset($relationParams['id']);
+						if (!empty($relationParams)) {
+							// 获取关联模型实例
+							$_queryObject = eval($code . '();');
+							$modelName = '\\' . $_queryObject->getmodel();
+							$relationModel = new $modelName;
+							//设置关联模型条件过滤
+							$relationParams = $this->paramsFilter($relationParams,$relationModel);
+							$relationModel = $this->setParamsQuery($relationParams,$_queryObject);
+							$articles[] = $relationModel->select();
+						} else {
+							$articles[] = eval($code . ';');
+						}
 					} else {
 						foreach ($datas as $article) {
 							$code = 'return $article->' . $params["relation"] . ';';
@@ -62,48 +74,25 @@
 				return $this;
 			}
 			if (!empty($params['relation'])) {
-				$relations = is_string($params['relation']) ? explode(',' , $params['relation']) : $params['relation'];
-				foreach ($this->relationFilter as $key => $value) {
-					foreach ($relations as $index=>$relation) {
-						$relation = Loader::parseName($relation, 1, false);
-						if ($relation == $key) {
-							$paramsRelations[] = $key;
-							$relationType[] = $value;
-							$relationParams[] = isset($params['relationParams'][$index]) ? $params['relationParams'][$index] : '';
-						}
-					}
-				}
-				if (!empty($paramsRelations)) {
-					if (count($paramsRelations) == 1) {
-						$relationName = $paramsRelations[0];
-						$model = $this->$relationName();
-						if (!empty($params['relationParams'])) {
-							$withParams = $this->setWithmethodParams($params['relationParams'],$model,['name'=>$paramsRelations[0],'relationType'=>$relationType[0]]);
-						} else {
-							$withParams = $paramsRelations[0];
-						}
+				$relations = $this->strToArr($params['relation']);
+				$enableRelations = array_intersect($relations,$this->relationFilter);
+				if (!empty($enableRelations)) {
+					if (!empty($params['id']) && count($enableRelations == 1)) {
+						$this->paramsFilter($params);
 					} else {
-						foreach ($paramsRelations as $k => $relation) {
-							$model = $this->$relation();
-							if (isset($relationParams[$k])) {
-								$withParams[] = $this->setWithmethodParams($params['relationParams'][$k],$model,['name'=>$relation,'relationType'=>$relationType[$k]]);
-							} else {
-								$withParams[] = $relation;
-							}
-						}
-					}
-					if (!empty($withParams)) {
-						$this->with($withParams);
+						$this->paramsFilter($params)->with($enableRelations);
 					}
 				}
+			} else {
+				$this->paramsFilter($params);
 			}
-			return $this->paramsFilter($params);
+			return $this;
 		}
 		/**
 		 * @access public
 		 * @param array    $params  过滤参数
-		 * @param Model    $model 关联模型
-		 * @return $this
+		 * @param model    $model 关联模型
+		 * @return model|array  $this|链式查询条件数组
 		 */
 		public function paramsFilter($params,$model = '')
 		{
@@ -113,108 +102,97 @@
 			} else {
 				$_this = $this;
 			}
+
 			if (isset($_this->visible)) {
 				$whiteParams = $_this->visible;
 			}
+			// 设置field字段过滤
 			if (!empty($params['field'])) {
 				if (!empty($whiteParams)) {
-					if (is_string($params['field'])) {
-						$filterParams = explode(',',$params['field']);
-					}
+					$filterParams = $this->strToArr($params['field']);
 					$mixedField = array_intersect($filterParams,$whiteParams);
 				}
 				if (!empty($mixedField)) {
 					if (empty($model)) {
 						$_this->field($mixedField);
 					} else {
+						$key = array_search('id',$mixedField);
+						if (false !== $key) {
+							$mixedField[$key] = 'articles.id';
+						}
 						$condition['field'] = $mixedField;
 					}
+				}
+			}
+			// 设置id，ids
+			if (!empty($params['ids'])) {
+				$ids = $this->strToArr($params['ids']);
+				foreach ($ids as $key => $value) {
+					$ids[$key] = intval($value);
 				}
 			}
 			if (!empty($params['id'])) {
 				$id = intval($params['id']);
 				if (!empty($id)) {
-					if (empty($model)) {
-						$_this->where('id',$id);
-					} else {
-						$condition['id'] = $id;
-					}
-					if (isset($condition)) {
-						return $condition;
-					} else {
-						return $_this;
-					}
+					return $_this->where('id',$id);
 				}
-			} elseif (!empty($params['ids'])) {
-				$ids = $params['ids'];
-				if (is_string($ids)) {
-					$ids = explode(',',$params['ids']);
-				}
-				if (is_array($ids)) {
-					foreach ($ids as $key => $value) {
-						$ids[$key] = intval($value);
-					}
-				} else {
-					$ids = [intval($ids)];
-				}
+			} elseif (!empty($ids)) {
 				if (empty($model)) {
 					$_this->where('id','in',$ids);
 				} else {
 					$condition['ids'] = ['id','in',$ids];
 				}
 			}
+			if (!empty($params['where'])) {
+				if (empty($model)) {
+					$_this->where($params['where']);
+				}
+			}
+			// 设置limit查询
 			if (!empty($params['limit'])) {
-				if (is_string($params['limit']) || is_numeric($params['limit'])) {
-					if (is_string($params['limit'])) {
-						$limit = explode(',',$params['limit']);
-						foreach ($limit as $key => $value) {
-							$limit[$key] = intval($value);
-						}
+				$limitArr = $this->strToArr($params['limit']);
+				$limit = [];
+				foreach ($limitArr as $value) {
+					$limit[] = intval($value);
+				}
+				if (count($limit) == 1) {
+					if (empty($model)) {
+						$_this->limit($limit[0]);
 					} else {
-						$limit = [intval($params['limit'])];
+						$condition['limit'] = $limit[0];
 					}
-					if (count($limit) == 1) {
-						if (empty($model)) {
-							$_this->limit($limit[0]);
-						} else {
-							$condition['limit'] = $limit[0];
-						}
-					} elseif (count($limit) == 2) {
-						if (empty($model)) {
-							$_this->limit($limit[0],$limit[1]);
-						} else {
-							$condition['limit'] = $limit[0] . ',' . $limit[1];
-						}
+				} elseif (count($limit) == 2) {
+					if (empty($model)) {
+						$_this->limit($limit[0],$limit[1]);
+					} else {
+						$condition['limit'] = $limit[0] . ',' . $limit[1];
 					}
 				}
 			}
+			// 设置分页
 			if (!empty($params['page'])) {
-				if (is_string($params['page']) || is_numeric($params['page'])) {
-					if (is_string($params['page'])) {
-						$page = explode(',',$params['page']);
-						foreach ($page as $key => $value) {
-							$page[$key] = intval($value);
-						}
+				$pageArr = $this->strToArr($params['page']);
+				$page = [];
+				foreach ($pageArr as $value) {
+					$page[] = intval($value);
+				}
+				if (count($page) == 1) {
+					if (empty($model)) {
+						$_this->page($page[0]);
 					} else {
-						$page = [intval($params['page'])];
+						$condition['page'] = $page[0];
 					}
-					if (count($page) == 1) {
-						if (empty($model)) {
-							$_this->page($page[0]);
-						} else {
-							$condition['page'] = $page[0];
-						}
-					} elseif (count($page) == 2) {
-						if (empty($model)) {
-							$_this->page($page[0],$page[1]);
-						} else {
-							$condition['page'] = $page[0] . ',' . $page[1];
-						}
+				} elseif (count($page) == 2) {
+					if (empty($model)) {
+						$_this->page($page[0],$page[1]);
+					} else {
+						$condition['page'] = $page[0] . ',' . $page[1];
 					}
 				}
 			}
-			if (!empty($params['order']) && is_string($params['order'])) {
-				$order = explode(',',$params['order']);
+			//设置排序
+			if (!empty($params['order'])) {
+				$order = $this->strToArr($params['order']);
 				foreach ($order as $key => $value) {
 					$upDwn = substr($value,0,1);
 					$orderType = $upDwn == '-' ? 'desc' : 'asc';
@@ -242,43 +220,36 @@
 			}
 		}
 		/**
-		 * 设置预载入条件
+		 * 设置链式查询
 		 * @access public
-		 * @param array $relationParams 关联模型条件参数
-		 * @param model $model 关联模型
-		 * @param array $relation 关联方法参数
-		 * @return boolean
+		 * @param array $params 链式查询条件
+		 * @param model $model 模型
+		 * @return $this
 		 */
-		public function setWithmethodParams($relationParams,$model,$relation)
+		public function setParamsQuery($params,$model = '')
 		{
-			$relationWhere = $this->paramsFilter($relationParams,$model);
-			$relationWhere['relationType'] = $relation['relationType'];
-			return [
-				$relation['name'] => function ($query) use ($relationWhere) {
-					if (!empty($relationWhere['field'])) {
-						if ($relationWhere['type'] == 'hasOne' || $relationWhere['relationType'] == 'belongsTo') {
-							$query->withField($relationWhere['field']);
-						} else {
-							$query->field($relationWhere['field']);
-						}
-					}
-					if (!empty($relationWhere['ids'])) {
-						$query->where($relationWhere['ids']);
-					}
-					if (!empty($relationWhere['where'])) {
-						$query->where($relationWhere['where']);
-					}
-					if (!empty($relationWhere['limit'])) {
-						$query->where($relationWhere['limit']);
-					}
-					if (!empty($relationWhere['page'])) {
-						$query->where($relationWhere['page']);
-					}
-					if (!empty($relationWhere['order'])) {
-						$query->where($relationWhere['order']);
-					}
-				}
-			];
+			if (!empty($model)) {
+				$_this = $model;
+			} else {
+				$_this = $this;
+			}
+			$_this->alias('articles');
+			if (!empty($params['field'])) {
+				$_this->field($params['field']);
+			}
+			if (!empty($params['ids'])) {
+				$_this->where('articles.id',$params['ids'][1],$params['ids'][2]);
+			}
+			if (!empty($params['limit'])) {
+				$_this->limit($params['limit']);
+			}
+			if (!empty($params['page'])) {
+				$_this->page($params['page']);
+			}
+			if (!empty($params['order'])) {
+				$_this->order($params['order']);
+			}
+			return $_this;
 		}
 		/**
 		 * 是否允许关联
@@ -288,13 +259,24 @@
 		 */
 		public function isWhite($relationName)
 		{
-			$name = Loader::parseName($relationName, 1, false);
-			foreach ($this->relationFilter as $key => $value) {
-				if ($name == $key) {
-					return true;
-				} else{
-					return false;
-				}
+			if (!is_string($relationName)) {
+				return false;
 			}
+			$name = Loader::parseName($relationName, 1, false);
+			if (in_array($name,$this->relationFilter)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		/**
+		 * 懒人函数
+		 * @access public
+		 * @param string $value 字符串
+		 * @return array
+		 */
+		public function strToArr($string)
+		{
+			return is_string($string) ? explode(',',$string) : $string;
 		}
 	}

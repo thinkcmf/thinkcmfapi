@@ -11,7 +11,6 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalCategoryModel;
-use think\Request;
 
 class CategorysController extends RestBaseController
 {
@@ -19,6 +18,7 @@ class CategorysController extends RestBaseController
 
     public function __construct(PortalCategoryModel $categoryModel)
     {
+    	parent::__construct();
         $this->categoryModel = $categoryModel;
     }
     /**
@@ -28,7 +28,7 @@ class CategorysController extends RestBaseController
      */
     public function index()
     {
-        $params = Request::instance()->get();
+        $params = $this->request->get();
         $datas = $this->categoryModel->getDatas($params);
         $this->success('请求成功!',$datas);
     }
@@ -41,7 +41,7 @@ class CategorysController extends RestBaseController
      */
     public function read($id)
     {
-        $params = Request::instance()->get();
+	    $params = $this->request->get();
         $params['id'] = $id;
         $datas = $this->categoryModel->getDatas($params);
         $this->success('请求成功!',$datas);
