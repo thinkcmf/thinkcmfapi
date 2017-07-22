@@ -171,45 +171,4 @@ class ProfileController extends RestUserBaseController
         }
     }
 
-    /**
-     * 用户收藏列表相关
-     * @param 请求为GET 获取收藏信息
-     * @param 请求为DELETE 删除信息
-     * @param 待续 ..
-     */
-    public function userFavorite()
-    {
-        if ($this->request->isGet()) {
-            $userId            = $this->getUserId();
-            $userFavoriteModel = model('UserFavorite');
-            $favoriteData      = $userFavoriteModel->where('user_id', $userId)->order('create_time', 'desc')->select();
-            $this->success('请求成功', $favoriteData);
-        }
-
-        if ($this->request->isDelete()) {
-            $param  = $this->request->param();
-            $userId = $this->getUserId();
-            if (isset($param['id'])) {
-                $id     = $this->request->param('id', 0, 'intval');
-                $result = DB::name('UserFavorite')->where(['id' => $id, 'user_id' => $userId])->delete();
-                if ($result !== 0) {
-                    $this->success('移除成功！');
-                } else {
-                    $this->error('移除的目标不存在！');
-                }
-            }
-
-            if (isset($param['ids'])) {
-                $ids    = $this->request->param('ids/a');
-                $result = DB::name('UserFavorite')->where('user_id', $userId)->delete($ids);
-                if ($result !== 0) {
-                    $this->success('移除成功！');
-                } else {
-                    $this->error('移除的目标不存在！');
-                }
-            }
-
-            $this->error('移除失败!');
-        }
-    }
 }

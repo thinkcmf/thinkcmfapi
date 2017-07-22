@@ -8,13 +8,13 @@
 // +----------------------------------------------------------------------
 namespace api\portal\controller;
 
-use api\portal\controller\CommonController;
+use cmf\controller\RestBaseController;
 use api\portal\model\PortalCategoryModel as PortalCategory;
 use api\portal\model\PortalPostModel as PortalPost;
 use think\exception\HttpResponseException;
 use think\Response;
 
-class ListsController extends CommonController
+class ListsController extends RestBaseController
 {
 
     /**
