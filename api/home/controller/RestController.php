@@ -6,6 +6,7 @@
 // +----------------------------------------------------------------------
 // | Author: Dean <zxxjjforever@163.com>
 // +----------------------------------------------------------------------
+// API 模板文件，可以复制
 namespace api\home\controller;
 
 use cmf\controller\RestBaseController;
