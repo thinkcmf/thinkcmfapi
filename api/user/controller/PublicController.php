@@ -199,8 +199,8 @@ class PublicController extends RestBaseController
             $this->error($errMsg);
         }
 
-        $userPass=cmf_password($data['password']);
-        Db::name("user")->where($userWhere)->update(['user_pass'=>$userPass]);
+        $userPass = cmf_password($data['password']);
+        Db::name("user")->where($userWhere)->update(['user_pass' => $userPass]);
 
         $this->success("密码重置成功,请使用新密码登录!");
 

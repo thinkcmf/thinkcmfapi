@@ -134,76 +134,77 @@ class ProfileController extends RestUserBaseController
     {
         //判断请求为GET，获取信息
         if ($this->request->isGet()) {
-            $userId = $this->getUserId();
+            $userId   = $this->getUserId();
             $fieldStr = 'user_type,user_login,mobile,user_email,user_nickname,avatar,signature,user_url,sex,birthday,score,coin,user_status,user_activation_key,create_time,last_login_time,last_login_ip';
             if (empty($field)) {
                 $userData = Db::name("user")->field($fieldStr)->find($userId);
-            }else{
-                $fieldArr = explode(',',$fieldStr);
-                $postFieldArr = explode(',',$field);
-                $mixedField = array_intersect($fieldArr,$postFieldArr);
+            } else {
+                $fieldArr     = explode(',', $fieldStr);
+                $postFieldArr = explode(',', $field);
+                $mixedField   = array_intersect($fieldArr, $postFieldArr);
                 if (empty($mixedField)) {
                     $this->error('您查询的信息不存在！');
                 }
                 if (count($mixedField) > 1) {
-                    $fieldStr = implode(',',$mixedField);
+                    $fieldStr = implode(',', $mixedField);
                     $userData = Db::name("user")->field($fieldStr)->find($userId);
-                }else{
-                    $userData = Db::name("user")->where('id',$userId)->value($mixedField);
+                } else {
+                    $userData = Db::name("user")->where('id', $userId)->value($mixedField);
                 }
             }
-            $this->success('获取成功！',$userData);
+            $this->success('获取成功！', $userData);
         }
         //判断请求为POST,修改信息
         if ($this->request->isPost()) {
-            $userId = $this->getUserId();
+            $userId   = $this->getUserId();
             $fieldStr = 'user_nickname,avatar,signature,user_url,sex,birthday';
-            $data = $this->request->post();
+            $data     = $this->request->post();
             if (empty($data)) {
                 $this->error('修改失败，提交表单为空！');
             }
-            $upData = Db::name("user")->where('id',$userId)->field($fieldStr)->update($data);
+            $upData = Db::name("user")->where('id', $userId)->field($fieldStr)->update($data);
             if ($upData !== false) {
                 $this->success('修改成功！');
-            }else{
+            } else {
                 $this->error('修改失败！');
             }
         }
     }
+
     /**
      * 用户收藏列表相关
      * @param 请求为GET 获取收藏信息
      * @param 请求为DELETE 删除信息
-     * @param 待续..
+     * @param 待续 ..
      */
     public function userFavorite()
     {
         if ($this->request->isGet()) {
-            $userId = $this->getUserId();
+            $userId            = $this->getUserId();
             $userFavoriteModel = model('UserFavorite');
-            $favoriteData = $userFavoriteModel->where('user_id',$userId)->order('create_time','desc')->select();
-            $this->success('请求成功',$favoriteData);
+            $favoriteData      = $userFavoriteModel->where('user_id', $userId)->order('create_time', 'desc')->select();
+            $this->success('请求成功', $favoriteData);
         }
 
         if ($this->request->isDelete()) {
-            $param = $this->request->param();
+            $param  = $this->request->param();
             $userId = $this->getUserId();
             if (isset($param['id'])) {
-                $id = $this->request->param('id', 0, 'intval');
-                $result = DB::name('UserFavorite')->where(['id'=>$id,'user_id'=>$userId])->delete();
-                if ($result !== 0 ) {
+                $id     = $this->request->param('id', 0, 'intval');
+                $result = DB::name('UserFavorite')->where(['id' => $id, 'user_id' => $userId])->delete();
+                if ($result !== 0) {
                     $this->success('移除成功！');
-                }else{
+                } else {
                     $this->error('移除的目标不存在！');
                 }
             }
 
             if (isset($param['ids'])) {
-                $ids     = $this->request->param('ids/a');
-                $result = DB::name('UserFavorite')->where('user_id',$userId)->delete($ids);
-                if ($result !==0) {
+                $ids    = $this->request->param('ids/a');
+                $result = DB::name('UserFavorite')->where('user_id', $userId)->delete($ids);
+                if ($result !== 0) {
                     $this->success('移除成功！');
-                }else{
+                } else {
                     $this->error('移除的目标不存在！');
                 }
             }
