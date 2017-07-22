@@ -11,10 +11,11 @@
 // | Date: 2017-5-25
 // +----------------------------------------------------------------------
 namespace api\user\controller;
-use api\user\model\SlideModel;
-use cmf\controller\RestUserBaseController;
 
-class SlideController extends RestUserBaseController
+use api\user\model\SlideModel;
+use cmf\controller\RestBaseController;
+
+class SlidesController extends RestBaseController
 {
     /**
      * [getSlide 获取幻灯片]
@@ -26,20 +27,20 @@ class SlideController extends RestUserBaseController
     public function getSlide()
     {
         //slide为空或不存在抛出异常
-        if(!$this -> request -> has('slide') || empty($this -> request -> param('slide'))){
-           $this -> error(['code' => 0, 'msg' => '缺少slide参数']);
+        if (!$this->request->has('slide') || empty($this->request->param('slide'))) {
+            $this->error(['code' => 0, 'msg' => '缺少slide参数']);
         }
 
-        $map['id'] = $this -> request -> param('slide');
-    	$obj = new SlideModel();
-    	$data = $obj -> SlideList($map);
+        $map['id'] = $this->request->param('slide');
+        $obj       = new SlideModel();
+        $data      = $obj->SlideList($map);
 
         //剔除分类状态隐藏 剔除分类下显示数据为空
-        if($data -> isEmpty() || empty($data->toArray()[0]['slide_item_model'])){
-            $this -> error(['code' => 0, 'msg' => '该组幻灯片显示数据为空']);
+        if ($data->isEmpty() || empty($data->toArray()[0]['slide_item_model'])) {
+            $this->error(['code' => 0, 'msg' => '该组幻灯片显示数据为空']);
         }
 
-        $this -> success("该组幻灯片获取成功!", $data);
+        $this->success("该组幻灯片获取成功!", $data);
     }
 
 }
