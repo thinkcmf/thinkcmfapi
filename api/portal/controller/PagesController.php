@@ -18,9 +18,10 @@ class PagesController extends RestBaseController
 
     public function __construct(PortalPostModel $postModel)
     {
-    	parent::__construct();
+        parent::__construct();
         $this->postModel = $postModel;
     }
+
     /**
      * 显示单页列表
      *
@@ -28,24 +29,24 @@ class PagesController extends RestBaseController
      */
     public function index()
     {
-        $params = $this->request->get();
+        $params                       = $this->request->get();
         $params['where']['post_type'] = 2;
-        $datas = $this->postModel->getDatas($params);
-        $this->success('请求成功!',$datas);
+        $datas                        = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $datas);
     }
 
     /**
      * 显示指定的单页
      *
-     * @param  int  $id
-     * @return \think\Response
+     * @param  int $id
+     * @return void
      */
     public function read($id)
     {
-	    $params = $this->request->get();
+        $params                       = $this->request->get();
         $params['where']['post_type'] = 2;
-        $params['id'] = $id;
-        $datas = $this->postModel->getDatas($params);
-        $this->success('请求成功!',$datas);
+        $params['id']                 = $id;
+        $datas                        = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $datas);
     }
 }

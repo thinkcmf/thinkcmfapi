@@ -13,37 +13,38 @@ use api\common\model\ParamsFilterModel;
 
 class UserModel extends ParamsFilterModel
 {
-	//可查询字段
-	protected $visible = [
-		'articles.id','user_nickname','avatar','signature'
-	];
-	//模型关联方法
-	protected $relationFilter = ['user'];
-	/**
-	 * 基础查询
-	 */
-	protected function base($query)
-	{
-		$query->where('cmf_user.user_status',1);
-	}
+    //可查询字段
+    protected $visible = [
+        'articles.id', 'user_nickname', 'avatar', 'signature'
+    ];
+    //模型关联方法
+    protected $relationFilter = ['user'];
 
-	/**
-	 * more 自动转化
-	 * @param $value
-	 * @return array
-	 */
-	public function getAvatarAttr($value)
-	{
-		$value = !empty($value) ? cmf_get_image_url($value) : $value;
-		return $value;
-	}
+    /**
+     * 基础查询
+     */
+    protected function base($query)
+    {
+        $query->where('cmf_user.user_status', 1);
+    }
 
-	/**
-	 * 关联 user表
-	 * @return $this
-	 */
-	public function user()
-	{
-		return $this->belongsTo('UserModel', 'user_id')->setEagerlyType(1);
-	}
+    /**
+     * more 自动转化
+     * @param $value
+     * @return array
+     */
+    public function getAvatarAttr($value)
+    {
+        $value = !empty($value) ? cmf_get_image_url($value) : $value;
+        return $value;
+    }
+
+    /**
+     * 关联 user表
+     * @return $this
+     */
+    public function user()
+    {
+        return $this->belongsTo('UserModel', 'user_id')->setEagerlyType(1);
+    }
 }

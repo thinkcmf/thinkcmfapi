@@ -12,5 +12,5 @@ use cmf\controller\RestBaseController;
 
 class CommonController extends RestBaseController
 {
-   
+
 }
