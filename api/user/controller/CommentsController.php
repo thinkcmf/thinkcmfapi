@@ -9,8 +9,8 @@
 
 namespace api\user\controller;
 
-use cmf\controller\RestBaseController;
 use api\user\model\CommentModel;
+use cmf\controller\RestBaseController;
 
 class CommentsController extends RestBaseController
 {
@@ -41,24 +41,13 @@ class CommentsController extends RestBaseController
     }
 
     /**
-     * 显示指定的评论
-     *
-     * @param  int $id
-     * @return \think\Response
-     */
-    public function read($id)
-    {
-
-    }
-
-    /**
-     * [getComment 获取评论]
+     * [getComments 获取评论]
      * @Author:   wuwu<15093565100@163.com>
      * @DateTime: 2017-05-25T20:48:53+0800
      * @since:    1.0
      * @return    [array_json] [获取Comment]
      */
-    public function getComment()
+    public function getComments()
     {
         //为空或不存在抛出异常
         if (!$this->request->has('map') || empty($this->request->param('map'))) {
@@ -87,7 +76,6 @@ class CommentsController extends RestBaseController
                 $sqldata = $comment->page($map, $num, $current);
             }
         }
-
 
         if (!$this->request->has('order') || empty($this->request->param('order'))) {
             $order = 'id desc';

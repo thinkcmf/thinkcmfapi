@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | 文件说明：幻灯片  
+// | 文件说明：幻灯片
 // +----------------------------------------------------------------------
 // | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
@@ -18,13 +18,13 @@ use cmf\controller\RestBaseController;
 class SlidesController extends RestBaseController
 {
     /**
-     * [getSlide 获取幻灯片]
+     * [getSlides 获取幻灯片]
      * @Author:   wuwu<15093565100@163.com>
      * @DateTime: 2017-05-25T20:48:53+0800
      * @since:    1.0
      * @return    [array_json] [获取幻灯片]
      */
-    public function getSlide()
+    public function getSlides()
     {
         //slide为空或不存在抛出异常
         if (!$this->request->has('slide') || empty($this->request->param('slide'))) {
