@@ -8,12 +8,6 @@
 // +----------------------------------------------------------------------
 
 namespace api\portal\model;
-
-<<<<<<< HEAD
-use think\Model;
-
-class UserModel extends Model
-=======
 use api\common\model\CommonModel;
 
 class UserModel extends CommonModel
