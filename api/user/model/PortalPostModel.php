@@ -252,7 +252,9 @@ class PortalPostModel extends CommonModel
 
 	/**
 	 * 获取图片附件url相对地址
-	 * 默认上传名字 _names  地址 _urls
+	 * 默认上传名字 *_names  地址 *_urls
+	 * @param $annex 上传附件
+	 * @return array
 	 */
 	public function setAnnexUrl($annex)
 	{
@@ -275,6 +277,12 @@ class PortalPostModel extends CommonModel
 		return $more;
 	}
 
+	/**
+	 * 删除文章
+	 * @param $ids  int|array   文章id
+	 * @param $userId   当前用户id
+	 * @return bool|int 删除结果
+	 */
 	public function deleteArticle($ids,$userId)
 	{
 		$time   = time();
@@ -311,6 +319,7 @@ class PortalPostModel extends CommonModel
 	/**
 	 * 判断文章所属用户是否为当前用户，超级管理员除外
 	 * @params  int $id     文章id
+	 * @param   int $userId     当前用户id
 	 * @return  boolean     是 true , 否 false
 	 */
 	public function isUserPost($id,$userId)
@@ -327,6 +336,7 @@ class PortalPostModel extends CommonModel
 	/**
 	 * 过滤属于当前用户的文章，超级管理员除外
 	 * @params  array $ids     文章id的数组
+	 * @param   int $userId     当前用户id
 	 * @return  array     属于当前用户的文章id
 	 */
 	public function isUserPosts($ids,$userId)
