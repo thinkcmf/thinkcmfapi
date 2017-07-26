@@ -9,10 +9,10 @@
 
 namespace api\portal\model;
 
-use api\common\model\ParamsFilterModel;
+use api\common\model\CommonModel;
 use api\portal\model\PortalCategoryModel as PortalCategory;
 
-class PortalPostModel extends ParamsFilterModel
+class PortalPostModel extends CommonModel
 {
     //可查询字段
     protected $visible = [

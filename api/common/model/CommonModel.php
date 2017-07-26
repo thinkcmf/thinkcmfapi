@@ -11,7 +11,7 @@ namespace api\common\model;
 use think\Model;
 use think\Loader;
 
-class ParamsFilterModel extends Model
+class CommonModel extends Model
 {
     //  关联模型过滤
     protected $relationFilter = [];

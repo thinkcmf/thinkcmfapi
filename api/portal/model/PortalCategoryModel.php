@@ -9,9 +9,9 @@
 
 namespace api\portal\model;
 
-use api\common\model\ParamsFilterModel;
+use api\common\model\CommonModel;
 
-class PortalCategoryModel extends ParamsFilterModel
+class PortalCategoryModel extends CommonModel
 {
     //类型转换
     protected $type = [
