@@ -11,7 +11,6 @@ namespace api\portal\model;
 use api\common\model\CommonModel;
 
 class UserModel extends CommonModel
->>>>>>> a04cbbac0deeb4a231f506e2628cb339c953d35f
 {
     //可查询字段
     protected $visible = [
