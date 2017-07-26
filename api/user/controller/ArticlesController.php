@@ -44,7 +44,7 @@ class ArticlesController extends RestUserBaseController
 			$this->error($result);
 		}
 		$this->postModel->addArticle($datas);
-		$this->success('文章添加成功！');
+		$this->success('添加成功！');
 	}
 
 	/**
@@ -54,6 +54,14 @@ class ArticlesController extends RestUserBaseController
 	 */
 	public function read($id)
 	{
+		if (empty($id)) {
+			$this->error('无效的文章id');
+		}
+		$params         =   $this->request->get();
+		$params['id']   =   $id;
+		$userId         =   $this->getUserId();
+		$datas          =   $this->postModel->getUserArticles($userId,$params);
+		$this->success('请求成功!', $datas);
 	}
 
 	/**
@@ -63,13 +71,20 @@ class ArticlesController extends RestUserBaseController
 	 */
 	public function update($id)
 	{
-		$datas             =   $this->request->param();
-		$result            =   $this->validate($datas, 'Articles.article');
+		$data              =   $this->request->put();
+		$result            =   $this->validate($data, 'Articles.article');
 		if ($result !== true) {
 			$this->error($result);
 		}
-		return $this->postModel->editArticle($datas);
-		$this->success('文章添加成功！');
+		if (empty($id)) {
+			$this->error('无效的文章id');
+		}
+		$result = $this->postModel->editArticle($data,$id,$this->getUserId());
+		if ($result === false) {
+			$this->error('修改失败！');
+		} else {
+			$this->success('修改成功！');
+		}
 	}
 
 	/**
@@ -79,6 +94,14 @@ class ArticlesController extends RestUserBaseController
 	 */
 	public function delete($id)
 	{
+		if (empty($id)) {
+			$this->error('无效的文章id');
+		}
+		$result = $this->postModel->deleteArticle($id,$this->getUserId());
+		if ($result) {
+			$this->success('删除成功！');
+		} else {
+			$this->error('删除失败！');
+		}
 	}
-
 }

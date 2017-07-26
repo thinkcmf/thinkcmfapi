@@ -148,20 +148,27 @@ class PortalPostModel extends CommonModel
 	/**
 	 * 会员文章修改
 	 * @param array $data 文章数据
-	 * @return $this
+	 * @param int   $id     文章id
+	 * @return boolean   成功 true 失败 false
 	 */
-	public function editArticle($data)
+	public function editArticle($data,$id,$userId = '')
 	{
+		if (!empty($userId)) {
+			$isBelong = $this->isuserPost($id,$userId);
+			if ($isBelong === false) {
+				return $isBelong;
+			}
+		}
 		if (!empty($data['annex'])) {
 			$data['more'] = $this->setAnnexUrl($data['annex']);
 		}
 		if (!empty($data['thumbnail'])) {
 			$data['more']['thumbnail'] = cmf_asset_relative_url($data['thumbnail']);
 		}
+		$data['id']          =  $id;
 		$data['post_status'] = empty($data['post_status']) ? 0 : 1;
 		$data['is_top']      = empty($data['is_top']) ? 0 : 1;
 		$data['recommended'] = empty($data['recommended']) ? 0 : 1;
-
 		$this->allowField(true)->data($data, true)->isUpdate(true)->save();
 
 		$categories = $this->strToArr($data['categories']);
@@ -180,14 +187,14 @@ class PortalPostModel extends CommonModel
 			$data['post_keywords'] = str_replace('，', ',', $data['post_keywords']);
 			$keywords = explode(',', $data['post_keywords']);
 		}
-		return $this->addTags($keywords, $data['id']);
+		$this->addTags($keywords, $data['id']);
 		return $this;
 	}
 
 	/**
 	 * 根据文章关键字，增加标签
 	 * @param array $keywords     文章关键字数组
-	 * @param this $article
+	 * @param int $articleId    文章id
 	 * @return void
 	 */
 	public function addTags($keywords,$articleId)
@@ -213,7 +220,7 @@ class PortalPostModel extends CommonModel
 																			->select();
 					$keepTagIds = [];
 					foreach ($tagPosts as $key=>$tagPost) {
-						if ($this->id  != $tagPost['post_id']) {
+						if ($articleId  != $tagPost['post_id']) {
 							array_push($keepTagIds,$tagPost['tag_id']);
 						}
 					}
@@ -254,15 +261,80 @@ class PortalPostModel extends CommonModel
 			foreach ($annex as $key=>$value) {
 				$nameArr  =   $key . '_names';
 				$urlArr   =   $key . '_urls';
-				if (!empty($value[$nameArr]) && !empty($value[$urlArr])) {
+				if (is_string($value[$nameArr]) && is_string($value[$urlArr])) {
+					$more[$key] = [ $value[$nameArr] ,$value[$urlArr] ];
+				} elseif (!empty($value[$nameArr]) && !empty($value[$urlArr])) {
 					$more[$key] = [];
 					foreach ($value[$urlArr] as $k=>$url) {
 						$url = cmf_asset_relative_url($url);
-						array_push($more[$key],['url' => $url , 'name' => $value[$nameArr][$k]]);
+						array_push( $more[$key] , ['url' => $url , 'name' => $value[$nameArr][$k]] );
 					}
 				}
 			}
 		}
 		return $more;
+	}
+
+	public function deleteArticle($ids,$userId)
+	{
+		$time   = time();
+		$result = false;
+		$where = [];
+		if (!empty($userId)) {
+			if (is_numeric($ids)) {
+				if ($this->isUserPost($ids,$userId) || $userId == 1) {
+					$where['id']    =   $ids;
+				}
+			} elseif (is_string($ids)) {
+				$ids        =   explode(',',$ids);
+				$deleteIds  =   $this->isUserPosts($ids,$userId);
+				if (!empty($deleteIds)) {
+					$where['id']    =   [ 'in' , $deleteIds ];
+				}
+			}
+		} else {
+			if (is_numeric($ids)) {
+				$where['id'] = $ids;
+			}
+			if (is_string($ids)) {
+				$where['id'] = [ 'in' , $ids ];
+			}
+		}
+		if (!empty($where)) {
+			$result = $this->useGlobalScope(false)
+						   ->where($where)
+						   ->setField('delete_time',$time);
+		}
+		return $result;
+	}
+
+	/**
+	 * 判断文章所属用户是否为当前用户，超级管理员除外
+	 * @params  int $id     文章id
+	 * @return  boolean     是 true , 否 false
+	 */
+	public function isUserPost($id,$userId)
+	{
+		$postUserId = $this->useGlobalScope(false)
+						   ->getFieldById($id,'user_id');
+		if ($postUserId != $userId || $userId != 1) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * 过滤属于当前用户的文章，超级管理员除外
+	 * @params  array $ids     文章id的数组
+	 * @return  array     属于当前用户的文章id
+	 */
+	public function isUserPosts($ids,$userId)
+	{
+		$postIds   =   $this->useGlobalScope(false)
+						    ->where('user_id',$userId)
+						    ->where('id','in',$ids)
+						    ->column('id');
+		return array_intersect($ids,$postIds);
 	}
 }
