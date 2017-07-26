@@ -21,10 +21,8 @@ class CommentModel extends Model
     //可查询字段
     protected $visible = [
         'id', 'articles.id', 'parent_id', 'user_id', 'to_user_id', 'object_id', 'full_name',
-        'email', 'path', 'url', 'content', 'more', 'create_time'
+        'email', 'path', 'url', 'content', 'more', 'create_time', 'to_user',
     ];
-    //模型关联方法
-    protected $relationFilter = ['user'];
 
     /**
      * 基础查询
@@ -80,6 +78,11 @@ class CommentModel extends Model
         return $this->belongsTo('UserModel', 'user_id');
     }
 
+    public function toUser()
+    {
+        return $this->belongsTo('UserModel', 'to_user_id');
+    }
+
     /**
      * [CommentList 评论列表获取]
      * @Author:   wuwu<15093565100@163.com>
@@ -88,34 +91,30 @@ class CommentModel extends Model
      */
     public function CommentList($map, $limit, $order)
     {
-        $map = json_decode($map, true);
         if (empty($map)) {
             return [];
         }
-        $data = $this->field(true)->where($map)->order($order)->limit($limit)->select();
+        $data = $this->with('to_user')->field(true)->where($map)->order($order)->limit($limit)->select();
         return $data;
     }
 
     public function page($map, $num = 30, $current = 1)
-    {//下拉加载
-
-        $map = json_decode($map, true);
+    {
         if (empty($map)) {
             return [];
         }
-        $count     = $this->field(true)->where($map)->count();//总数
-        $countPage = ceil($count / $num);//总页数
+        $count     = $this->field(true)->where($map)->count(); //总数
+        $countPage = ceil($count / $num); //总页数
 
         if ($countPage <= 1) {
             $data['limit']   = '0,' . $num;
             $data['current'] = 1;
             return $data;
         }
-        $nextPage        = ($current - 1) * $num;//下一页
+        $nextPage        = ($current - 1) * $num; //下一页
         $data['limit']   = $nextPage . ',' . $num;
         $data['current'] = $current;
         return $data;
 
     }
 }
-

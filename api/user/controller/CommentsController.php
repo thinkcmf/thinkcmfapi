@@ -1,44 +1,22 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
+// | 文件说明：我的评论
 // +----------------------------------------------------------------------
-// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
+// | Copyright (c) 2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
-// | Author: pl125 <xskjs888@163.com>
+// | Author: wuwu <15093565100@163.com>
 // +----------------------------------------------------------------------
-
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Date: 2017-7-26
+// +----------------------------------------------------------------------
 namespace api\user\controller;
 
-use api\user\model\CommentModel;
-use cmf\controller\RestBaseController;
+use api\user\model\CommentModel as Comment;
+use cmf\controller\RestUserBaseController;
 
-class CommentsController extends RestBaseController
+class CommentsController extends RestUserBaseController
 {
-    protected $commentModel;
-
-    public function __construct(CommentModel $commentModel)
-    {
-        parent::__construct();
-        $this->commentModel = $commentModel;
-    }
-
-    /**
-     * 显示评论列表
-     *
-     * @return \think\Response
-     */
-    public function index()
-    {
-        $params = $this->request->get();
-        if (isset($params['o_id'])) {
-            $object_id = intval($params['o_id']);
-            if (!empty($object_id)) {
-                $params['where']['object_id'] = $object_id;
-            }
-        }
-        $datas = $this->commentModel->getDatas($params);
-        $this->success('请求成功!', $datas);
-    }
 
     /**
      * [getComments 获取评论]
@@ -49,13 +27,10 @@ class CommentsController extends RestBaseController
      */
     public function getComments()
     {
-        //为空或不存在抛出异常
-        if (!$this->request->has('map') || empty($this->request->param('map'))) {
-            $this->error(['code' => 0, 'msg' => '缺少map参数']);
-        }
-
-        $comment = new Comment();
-        $map     = htmlspecialchars_decode($this->request->get('map', '', false));
+        $input          = $this->request->param();
+        $user_id        = $this->request->has('uid') ? $input['uid'] : $this->error('userid不能为为空');
+        $comment        = new Comment();
+        $map['user_id'] = $user_id;
 
         //处理不同的情况
         if (!$this->request->has('current') || empty($this->request->param('current'))) {
@@ -77,23 +52,17 @@ class CommentsController extends RestBaseController
             }
         }
 
-        if (!$this->request->has('order') || empty($this->request->param('order'))) {
-            $order = 'id desc';
-        } else {
-            $order = $this->request->param('order');
-        }
-
-        if (empty($sqldata)) {
-            $this->error(['code' => 0, 'msg' => 'map参数不是json']);
-        }
+        $order = 'id DESC';
 
         $data = $comment->CommentList($map, $sqldata['limit'], $order);
-
+        $datas['datas'] = $data;
+        $datas['current'] = isset($current)?$current:1;
+        $datas['num'] = isset($num)?$num:'';
         //数据是否存在
         if ($data->isEmpty()) {
-            $this->error(['code' => 0, 'msg' => '评论数据为空']);
+            $this->error('评论数据为空');
         } else {
-            $this->success(['code' => 1, 'msg' => '评论获取成功!', 'current' => $sqldata['current'], 'data' => $data]);
+            $this->success('评论获取成功!', $datas);
         }
     }
 }

@@ -9,9 +9,9 @@
 
 namespace api\portal\model;
 
-use api\common\model\ParamsFilterModel;
+use think\Model;
 
-class UserModel extends ParamsFilterModel
+class UserModel extends Model
 {
     //可查询字段
     protected $visible = [
