@@ -1,5 +1,11 @@
 <?php
-
+// +----------------------------------------------------------------------
+// | ThinkCMF [ WE CAN DO IT MORE SIMPLE ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2013-2017 http://www.thinkcmf.com All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: pl125 <xskjs888@163.com>
+// +----------------------------------------------------------------------
 namespace api\user\model;
 use think\Db;
 use api\common\model\CommonModel;
@@ -106,6 +112,14 @@ class PortalPostModel extends CommonModel
 	}
 
 	/**
+	 * 关联 回收站 表
+	 */
+	public function recycleBin()
+	{
+		return $this->hasOne('RecycleBinModel','object_id');
+	}
+
+	/**
 	 * 获取用户文章
 	 */
 	public function getUserArticles($userId,$params)
@@ -146,7 +160,7 @@ class PortalPostModel extends CommonModel
 	}
 
 	/**
-	 * 会员文章修改
+	 * 会员文章编辑
 	 * @param array $data 文章数据
 	 * @param int   $id     文章id
 	 * @return boolean   成功 true 失败 false
@@ -280,38 +294,71 @@ class PortalPostModel extends CommonModel
 	/**
 	 * 删除文章
 	 * @param $ids  int|array   文章id
-	 * @param $userId   当前用户id
-	 * @return bool|int 删除结果
+	 * @param $userId   当前用户id  [可选]
+	 * @return bool|int 删除结果  true 成功 false 失败  -1 文章不存在
 	 */
-	public function deleteArticle($ids,$userId)
+	public function deleteArticle($ids,$userId = '')
 	{
 		$time   = time();
 		$result = false;
 		$where = [];
+
 		if (!empty($userId)) {
 			if (is_numeric($ids)) {
-				if ($this->isUserPost($ids,$userId) || $userId == 1) {
-					$where['id']    =   $ids;
+				$article     =   $this->find($ids);
+				if (!empty($article)) {
+					if ($this->isUserPost($ids,$userId) || $userId == 1) {
+						$where['id']    =   $ids;
+					}
 				}
-			} elseif (is_string($ids)) {
-				$ids        =   explode(',',$ids);
-				$deleteIds  =   $this->isUserPosts($ids,$userId);
-				if (!empty($deleteIds)) {
-					$where['id']    =   [ 'in' , $deleteIds ];
+			} else {
+				$ids            =   $this->strToArr($ids);
+				$articles       =   $this->where('id','in',$ids)->select();
+				if (!empty($articles)) {
+					$deleteIds  =   $this->isUserPosts($ids,$userId);
+					if (!empty($deleteIds)) {
+						$where['id']    =   [ 'in' , $deleteIds ];
+					}
 				}
 			}
 		} else {
 			if (is_numeric($ids)) {
-				$where['id'] = $ids;
+				$article     =   $this->find($ids);
+				if (!empty($article)) {
+					$where['id']    =   $ids;
+				}
+			} else {
+				$ids        =   $this->strToArr($ids);
+				$articles      =   $this->where('id','in',$ids)->select();
+				if (!empty($articles)) {
+					$where['id']    =   [ 'in' , $ids ];
+				}
 			}
-			if (is_string($ids)) {
-				$where['id'] = [ 'in' , $ids ];
-			}
+		}
+		if (empty($article) && empty($articles)) {
+			return -1;
 		}
 		if (!empty($where)) {
 			$result = $this->useGlobalScope(false)
 						   ->where($where)
 						   ->setField('delete_time',$time);
+		}
+		if ($result) {
+			$data = [
+				'create_time' => $time,
+				'table_name'  => 'portal_post'
+			];
+			if (!empty($article)) {
+				$data['name']   =  $article['post_title'];
+				$article->recycleBin()->save($data);
+			}
+
+			if (!empty($articles)) {
+				foreach ($articles as $article) {
+					$data['name']   =  $article['post_title'];
+					$article->recycleBin()->save($data);
+				}
+			}
 		}
 		return $result;
 	}

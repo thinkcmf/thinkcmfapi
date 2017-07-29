@@ -10,7 +10,7 @@ namespace api\user\model;
 
 use think\Model;
 
-class PortalCategoryModel extends Model
+class RecycleBinModel extends Model
 {
-    //
+
 }

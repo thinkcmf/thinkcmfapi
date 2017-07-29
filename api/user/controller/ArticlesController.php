@@ -81,9 +81,9 @@ class ArticlesController extends RestUserBaseController
 		}
 		$result = $this->postModel->editArticle($data,$id,$this->getUserId());
 		if ($result === false) {
-			$this->error('修改失败！');
+			$this->error('编辑失败！');
 		} else {
-			$this->success('修改成功！');
+			$this->success('编辑成功！');
 		}
 	}
 
@@ -98,6 +98,28 @@ class ArticlesController extends RestUserBaseController
 			$this->error('无效的文章id');
 		}
 		$result = $this->postModel->deleteArticle($id,$this->getUserId());
+		if ($result == -1) {
+			$this->error('文章已删除');
+		}
+		if ($result) {
+			$this->success('删除成功！');
+		} else {
+			$this->error('删除失败！');
+		}
+	}
+	/**
+	 * 批量删除文章
+	 */
+	public function deletes()
+	{
+		$ids     =  $this->request->post('ids/a');
+		if (empty($ids)) {
+			$this->error('文章id不能为空');
+		}
+		$result  =  $this->postModel->deleteArticle($ids,$this->getUserId());
+		if ($result == -1) {
+			$this->error('文章已删除');
+		}
 		if ($result) {
 			$this->success('删除成功！');
 		} else {
