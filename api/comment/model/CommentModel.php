@@ -8,21 +8,15 @@
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Date: 2017-6-4
+// | Date: 2017-7-29
 // +----------------------------------------------------------------------
 
-namespace api\user\model;
+namespace api\comment\model;
 
 use think\Model;
 
 class CommentModel extends Model
 {
-
-    //可查询字段
-    protected $visible = [
-        'id', 'articles.id', 'parent_id', 'user_id', 'to_user_id', 'object_id', 'full_name',
-        'email', 'path', 'url', 'content', 'more', 'create_time', 'to_user',
-    ];
 
     /**
      * 基础查询
