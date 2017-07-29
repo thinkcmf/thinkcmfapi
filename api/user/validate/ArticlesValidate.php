@@ -15,9 +15,9 @@ use think\Validate;
 class ArticlesValidate extends Validate
 {
     protected $rule = [
-        'post_title'    =>  'require',
-	    'post_content'  =>  'require',
-	    'categories'    =>  'require'
+        'post_title'        =>  'require',
+	    'post_content'      =>  'require',
+	    'categories'        =>  'require'
     ];
     protected $message = [
         'post_title.require'    =>  '文章标题不能为空',

@@ -34,36 +34,29 @@ class CommonModel extends Model
         }
         if (!empty($params['relation'])) {
             if ($this->isWhite($params['relation'])) {
-                $articles = [];
                 if (!empty($params['id'])) {
-                    $relationParams = $params;
-                    $code           = 'return $datas->' . $params["relation"];
+                    $relationParams =   $params;
                     unset($relationParams['id']);
                     if (!empty($relationParams)) {
                         // 获取关联模型实例
-                        $_queryObject  = eval($code . '();');
-                        $modelName     = '\\' . $_queryObject->getmodel();
-                        $relationModel = new $modelName;
+	                    $relation       =   $params['relation'];
+	                    $_queryObject   =   $datas->$relation();
+                        $modelName      =    '\\' . $_queryObject->getmodel();
+                        $relationModel  =    new $modelName;
                         //设置关联模型条件过滤
-                        $relationParams = $this->paramsFilter($relationParams, $relationModel);
-                        $relationModel  = $this->setParamsQuery($relationParams, $_queryObject);
-                        $articles[]     = $relationModel->select();
+                        $relationParams =   $this->paramsFilter($relationParams, $relationModel);
+                        $relationModel  =   $this->setParamsQuery($relationParams, $_queryObject);
+                        $datas          =   $datas->toArray();
+                        $datas[$params['relation']]       =   $relationModel->select();
                     } else {
-                        $articles[] = eval($code . ';');
+	                    $datas->append([$params['relation']]);
                     }
                 } else {
-                    foreach ($datas as $article) {
-                        $code       = 'return $article->' . $params["relation"] . ';';
-                        $articles[] = eval($code);
-                    }
+	                $datas->append([$params['relation']]);
                 }
             }
         }
-        if (empty($articles)) {
-            return $datas;
-        } else {
-            return [$datas, $articles];
-        }
+        return $datas;
     }
 
     /**
