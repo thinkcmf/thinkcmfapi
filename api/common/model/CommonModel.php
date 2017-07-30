@@ -48,11 +48,7 @@ class CommonModel extends Model
                         $relationModel  =   $this->setParamsQuery($relationParams, $_queryObject);
                         $datas          =   $datas->toArray();
                         $datas[$params['relation']]       =   $relationModel->select();
-                    } else {
-	                    $datas->append([$params['relation']]);
                     }
-                } else {
-	                $datas->append([$params['relation']]);
                 }
             }
         }
