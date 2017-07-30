@@ -43,6 +43,9 @@ class ArticlesController extends RestUserBaseController
 		if ($result !== true) {
 			$this->error($result);
 		}
+		if (empty($datas['published_time'])) {
+			$datas['published_time'] = time();
+		}
 		$this->postModel->addArticle($datas);
 		$this->success('添加成功！');
 	}

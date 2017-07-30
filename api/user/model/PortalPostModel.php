@@ -24,9 +24,32 @@ class PortalPostModel extends CommonModel
 	protected $type = [
 		'more' => 'array',
 	];
-
 	//设置只读字段
 	protected $readonly = ['user_id'];
+	// 开启自动写入时间戳字段
+	protected $autoWriteTimestamp = true;
+
+	/**
+	 * published_time   自动转化
+	 * @param $value
+	 * @return string
+	 */
+	public function getPublishedTimeAttr($value)
+	{
+		return date('Y-m-d H:i:s',$value);
+	}
+	/**
+	 * published_time   自动转化
+	 * @param $value
+	 * @return int
+	 */
+	public function setPublishedTimeAttr($value)
+	{
+		if (is_numeric($value)) {
+			return $value;
+		}
+		return strtotime($value);
+	}
 
 	/**
 	 * post_content 自动转化
@@ -163,6 +186,7 @@ class PortalPostModel extends CommonModel
 	 * 会员文章编辑
 	 * @param array $data 文章数据
 	 * @param int   $id     文章id
+	 * @param int   $userId     文章所属用户id [可选]
 	 * @return boolean   成功 true 失败 false
 	 */
 	public function editArticle($data,$id,$userId = '')
@@ -294,7 +318,7 @@ class PortalPostModel extends CommonModel
 	/**
 	 * 删除文章
 	 * @param $ids  int|array   文章id
-	 * @param $userId   当前用户id  [可选]
+	 * @param int   $userId     文章所属用户id  [可选]
 	 * @return bool|int 删除结果  true 成功 false 失败  -1 文章不存在
 	 */
 	public function deleteArticle($ids,$userId = '')
