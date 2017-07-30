@@ -14,7 +14,7 @@ class PortalTagModel extends CommonModel
 {
     //可查询字段
     protected $visible = [
-        'id','articles.id','recommended', 'post_count', 'name'
+        'id','articles.id','recommended', 'post_count', 'name','articles'
     ];
     //模型关联方法
     protected $relationFilter = ['articles'];
