@@ -164,8 +164,8 @@ class PortalPostModel extends CommonModel
 	 */
 	public function addArticle($data)
 	{
-		if (!empty($data['annex'])) {
-			$data['more'] = $this->setAnnexUrl($data['annex']);
+		if (!empty($data['more'])) {
+			$data['more'] = $this->setMoreUrl($data['more']);
 		}
 		if (!empty($data['thumbnail'])) {
 			$data['more']['thumbnail'] = cmf_asset_relative_url($data['thumbnail']);
@@ -197,8 +197,8 @@ class PortalPostModel extends CommonModel
 				return $isBelong;
 			}
 		}
-		if (!empty($data['annex'])) {
-			$data['more'] = $this->setAnnexUrl($data['annex']);
+		if (!empty($data['more'])) {
+			$data['more'] = $this->setMoreUrl($data['more']);
 		}
 		if (!empty($data['thumbnail'])) {
 			$data['more']['thumbnail'] = cmf_asset_relative_url($data['thumbnail']);
@@ -294,7 +294,7 @@ class PortalPostModel extends CommonModel
 	 * @param $annex 上传附件
 	 * @return array
 	 */
-	public function setAnnexUrl($annex)
+	public function setMoreUrl($annex)
 	{
 		$more = [];
 		if (!empty($annex)) {
