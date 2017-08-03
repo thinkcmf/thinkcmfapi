@@ -75,11 +75,11 @@ class CommentsController extends RestUserBaseController
      */
     public function getComments()
     {
-        $input          = $this->request->param();
-        $id        = $this->request->has('id') ? $input['id'] : $this->error('id不能为为空');
-        $table        = $this->request->has('table') ? $input['table'] : $this->error('table不能为为空');
-        $comment        = new Comment();
-        $map['object_id'] = $id;
+        $input             = $this->request->param();
+        $id                = $this->request->has('id') ? $input['id'] : $this->error('id不能为为空');
+        $table             = $this->request->has('table') ? $input['table'] : $this->error('table不能为为空');
+        $comment           = new Comment();
+        $map['object_id']  = $id;
         $map['table_name'] = $table;
 
         //处理不同的情况

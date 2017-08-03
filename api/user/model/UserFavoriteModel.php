@@ -18,9 +18,9 @@ class UserFavoriteModel extends Model
     /**
      * [base 基础查询条件]
      */
-	protected function base($query)
+    protected function base($query)
     {
-        $query -> field('id,title,url,description,create_time');
+        $query->field('id,title,url,description,create_time');
     }
 
     /**
@@ -29,7 +29,7 @@ class UserFavoriteModel extends Model
      */
     protected function unionTable($table_name)
     {
-    	return $this->hasOne($table_name.'Model','object_id');
+        return $this->hasOne($table_name . 'Model', 'object_id');
     }
 
     /**
@@ -39,17 +39,44 @@ class UserFavoriteModel extends Model
      */
     public function getFavorite($data)
     {
-    	if (!is_string($data[0])) {
-    		foreach ($data as $key => $value) {
-    			$where[$value['table_name']][] = $value['object_id'];
-    		}
-    		foreach ($where as $key => $value) {
-    			$favoriteData[] = $this->unionTable($key)->select($value);
-    		}
-    	}else{
-			$favoriteData =  $this->unionTable($data['table_name'])->find($data['object_id']);
-    	}
+        if (!is_string($data[0])) {
+            foreach ($data as $key => $value) {
+                $where[$value['table_name']][] = $value['object_id'];
+            }
+            foreach ($where as $key => $value) {
+                $favoriteData[] = $this->unionTable($key)->select($value);
+            }
+        } else {
+            $favoriteData = $this->unionTable($data['table_name'])->find($data['object_id']);
+        }
 
-    	return $favoriteData;
+        return $favoriteData;
+    }
+
+    /**
+     * [setFavorite 设置收藏]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-08-03T09:16:37+0800
+     * @since:    1.0
+     */
+    public function setFavorite()
+    {
+        //获取收藏内容信息
+    }
+
+    /**
+     * [unsetFavorite 取消收藏]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-08-03T09:17:30+0800
+     * @since:    1.0
+     * @return    [type]                    [description]
+     */
+    public function unsetFavorite($object_id, $table_name)
+    {
+        //根据id,table删除收藏
+        $map['object_id']  = empty($object_id) ? $object_id : return false;
+        $map['table_name'] = empty($table_name) ? $table_name : return false;
+        return self::destroy($map); //执行删除
+
     }
 }
