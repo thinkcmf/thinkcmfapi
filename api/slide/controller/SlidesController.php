@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 // | Date: 2017-5-25
 // +----------------------------------------------------------------------
-namespace api\user\controller;
+namespace api\slide\controller;
 
-use api\user\model\SlideModel;
+use api\slide\model\SlideModel;
 use cmf\controller\RestBaseController;
 
 class SlidesController extends RestBaseController
@@ -28,7 +28,7 @@ class SlidesController extends RestBaseController
     {
         //slide为空或不存在抛出异常
         if (!$this->request->has('slide') || empty($this->request->param('slide'))) {
-            $this->error(['code' => 0, 'msg' => '缺少slide参数']);
+            $this->error('缺少slide参数');
         }
 
         $map['id'] = $this->request->param('slide');
@@ -37,7 +37,7 @@ class SlidesController extends RestBaseController
 
         //剔除分类状态隐藏 剔除分类下显示数据为空
         if ($data->isEmpty() || empty($data->toArray()[0]['slide_item_model'])) {
-            $this->error(['code' => 0, 'msg' => '该组幻灯片显示数据为空']);
+            $this->error('该组幻灯片显示数据为空');
         }
 
         $this->success("该组幻灯片获取成功!", $data);

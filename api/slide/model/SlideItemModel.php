@@ -11,7 +11,7 @@
 // | Date: 2017-5-25
 // +----------------------------------------------------------------------
 
-namespace api\user\model;
+namespace api\slide\model;
 
 use think\Model;
 
