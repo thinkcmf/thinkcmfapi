@@ -59,9 +59,11 @@ class UserFavoriteModel extends Model
      * @DateTime: 2017-08-03T09:16:37+0800
      * @since:    1.0
      */
-    public function setFavorite()
+    public function setFavorite($data)
     {
         //获取收藏内容信息
+        $Favorite = self::create($data);
+        return $Favorite->save();
     }
 
     /**
@@ -74,8 +76,13 @@ class UserFavoriteModel extends Model
     public function unsetFavorite($object_id, $table_name)
     {
         //根据id,table删除收藏
-        $map['object_id']  = empty($object_id) ? $object_id : return false;
-        $map['table_name'] = empty($table_name) ? $table_name : return false;
+        if (empty($object_id)) {
+            return false;
+        } else if (empty($table_name)) {
+            return false;
+        }
+        $map['object_id']  = $object_id;
+        $map['table_name'] = $table_name;
         return self::destroy($map); //执行删除
 
     }

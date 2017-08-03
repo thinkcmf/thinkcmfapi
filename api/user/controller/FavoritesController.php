@@ -41,6 +41,17 @@ class FavoritesController extends RestUserBaseController
     public function setFavorites()
     {
         $input = $this->request->param();
+        //组装数据
+        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table'], $input['oid']);
+        if (!$data) {
+            $this->error('收藏失败');
+        }
+
+        if ($this->userFavoriteModel->setFavorite($data)) {
+            $this->success('收藏成功');
+        } else {
+            $this->error('收藏失败');
+        }
 
     }
 
@@ -51,11 +62,28 @@ class FavoritesController extends RestUserBaseController
      * @since:    1.0
      * @return    [type]                    [description]
      */
-    protected function _FavoritesObject($id, $table)
+    protected function _FavoritesObject($title, $url, $description, $table_name, $object_id)
     {
-        $id    = empty($id) ? $id : return false;
-        $table = empty($table) ? $table : return false;
+        $data['user_id']     = $this->getUserId();
+        $data['create_time'] = THINK_START_TIME;
 
+        if (empty($title)) {
+            return false;
+        } else if (empty($url)) {
+            return false;
+        } elseif (empty($description)) {
+            return false;
+        } elseif (empty($table_name)) {
+            return false;
+        } elseif (empty($object_id)) {
+            return false;
+        }
+        $data['title']       = $title;
+        $data['url']         = $url;
+        $data['description'] = $description;
+        $data['table_name']  = $table_name;
+        $data['object_id']   = $object_id;
+        return $data;
     }
 
     /**
@@ -73,6 +101,6 @@ class FavoritesController extends RestUserBaseController
         } else {
             $this->error('请求失败');
         }
-    }
 
+    }
 }
