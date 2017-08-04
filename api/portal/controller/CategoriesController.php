@@ -24,8 +24,6 @@ class CategoriesController extends RestBaseController
 
     /**
      * 显示分类列表
-     *
-     * @return \think\Response
      */
     public function index()
     {
@@ -36,9 +34,7 @@ class CategoriesController extends RestBaseController
 
     /**
      * 显示指定的分类
-     *
-     * @param  int $id
-     * @return \think\Response
+     * @param int $id
      */
     public function read($id)
     {
