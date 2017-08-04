@@ -8,10 +8,11 @@
 // +----------------------------------------------------------------------
 namespace api\portal\controller;
 
-use cmf\controller\RestUserBaseController;
+use api\portal\model\PortalPostModel;
+use cmf\controller\RestBaseController;
 use api\portal\model\PortalTagModel;
 
-class TagsController extends RestUserBaseController
+class TagsController extends RestBaseController
 {
     protected $tagModel;
 
@@ -43,19 +44,23 @@ class TagsController extends RestUserBaseController
     }
 
     /**
-     * 获取标签
+     * 获取标签文章列表
      * @param int $id
      */
-    public function read($id)
+    public function articles($id)
     {
         if (intval($id) === 0) {
-            $this->error('无效的文章id！');
+            $this->error('无效的标签id！');
         } else {
-            $params             = $this->request->get();
+            $params             = $this->request->param();
             $params['id']       = $id;
             $params['relation'] = 'articles';
-            $data               = $this->tagModel->getDatas($params);
-            $this->success('请求成功!', $data);
+            $postModel          = new PortalPostModel();
+
+            $articles = $postModel->setCondition($params)->alias('a')->join('__PORTAL_TAG_POST__ tp', 'a.id = tp.post_id')
+                ->where(['tag_id' => $id])->select();
+
+            $this->success('请求成功!', ['articles' => $articles]);
         }
     }
 }

@@ -9,7 +9,7 @@
 namespace api\user\controller;
 
 use cmf\controller\RestUserBaseController;
-use api\user\model\PortalPostModel;
+use api\portal\model\PortalPostModel;
 
 class ArticlesController extends RestUserBaseController
 {
