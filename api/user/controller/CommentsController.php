@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 // | Date: 2017-7-26
 // +----------------------------------------------------------------------
-namespace api\comment\controller;
+namespace api\user\controller;
 
 use api\comment\model\CommentModel as Comment;
 use cmf\controller\RestUserBaseController;

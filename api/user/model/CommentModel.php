@@ -11,7 +11,7 @@
 // | Date: 2017-7-29
 // +----------------------------------------------------------------------
 
-namespace api\comment\model;
+namespace api\user\model;
 
 use think\Model;
 
