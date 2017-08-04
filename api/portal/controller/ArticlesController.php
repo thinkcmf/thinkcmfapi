@@ -137,6 +137,7 @@ class ArticlesController extends RestBaseController
             $this->error('删除失败！');
         }
     }
+
     /**
      * 批量删除文章
      */

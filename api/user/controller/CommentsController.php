@@ -12,7 +12,7 @@
 // +----------------------------------------------------------------------
 namespace api\user\controller;
 
-use api\comment\model\CommentModel as Comment;
+use api\user\model\CommentModel as Comment;
 use cmf\controller\RestUserBaseController;
 
 class CommentsController extends RestUserBaseController
