@@ -10,9 +10,9 @@
 // +----------------------------------------------------------------------
 // | Date: 2017-5-25
 // +----------------------------------------------------------------------
-namespace api\slide\controller;
+namespace api\home\controller;
 
-use api\slide\model\SlideModel;
+use api\home\model\SlideModel;
 use cmf\controller\RestBaseController;
 
 class SlidesController extends RestBaseController
