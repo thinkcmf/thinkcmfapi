@@ -22,7 +22,7 @@ class TagsController extends RestUserBaseController
     }
 
     /**
-     * 显示标签列表
+     * 获取标签列表
      */
     public function index()
     {
@@ -43,8 +43,7 @@ class TagsController extends RestUserBaseController
     }
 
     /**
-     * 显示指定的标签
-     *
+     * 获取标签
      * @param int $id
      */
     public function read($id)

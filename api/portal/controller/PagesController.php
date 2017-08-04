@@ -23,7 +23,7 @@ class PagesController extends RestBaseController
     }
 
     /**
-     * 显示单页列表
+     * 页面列表
      */
     public function index()
     {
@@ -34,7 +34,7 @@ class PagesController extends RestBaseController
     }
 
     /**
-     * 显示指定的单页
+     * 获取页面
      * @param int $id
      */
     public function read($id)

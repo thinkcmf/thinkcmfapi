@@ -62,7 +62,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 显示资源列表
+     * 我的文章列表
      */
     public function my()
     {
@@ -73,7 +73,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 保存新建的资源
+     * 添加文章
      */
     public function save()
     {
@@ -83,15 +83,17 @@ class ArticlesController extends RestBaseController
         if ($result !== true) {
             $this->error($result);
         }
+
         if (empty($datas['published_time'])) {
             $datas['published_time'] = time();
         }
+
         $this->postModel->addArticle($datas);
         $this->success('添加成功！');
     }
 
     /**
-     * 保存更新的资源
+     * 更新文章
      *
      * @param  int $id
      */
@@ -114,7 +116,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 删除指定资源
+     * 删除文章
      * @param  int $id
      */
     public function delete($id)
