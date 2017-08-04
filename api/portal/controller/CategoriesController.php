@@ -23,13 +23,13 @@ class CategoriesController extends RestBaseController
     }
 
     /**
-     * 显示分类列表
+     * 获取分类列表
      */
     public function index()
     {
         $params = $this->request->get();
-        $datas  = $this->categoryModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data   = $this->categoryModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 
     /**
@@ -40,7 +40,7 @@ class CategoriesController extends RestBaseController
     {
         $params       = $this->request->get();
         $params['id'] = $id;
-        $datas        = $this->categoryModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data         = $this->categoryModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 }

@@ -18,13 +18,12 @@ use cmf\controller\RestBaseController;
 class SlidesController extends RestBaseController
 {
     /**
-     * [getSlides 获取幻灯片]
+     * [获取幻灯片]
      * @Author:   wuwu<15093565100@163.com>
      * @DateTime: 2017-05-25T20:48:53+0800
      * @since:    1.0
-     * @return    [array_json] [获取幻灯片]
      */
-    public function getSlides()
+    public function index()
     {
         //slide为空或不存在抛出异常
         if (!$this->request->has('slide') || empty($this->request->param('slide'))) {

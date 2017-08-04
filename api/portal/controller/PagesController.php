@@ -29,8 +29,8 @@ class PagesController extends RestBaseController
     {
         $params                       = $this->request->get();
         $params['where']['post_type'] = 2;
-        $datas                        = $this->postModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data                         = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 
     /**

@@ -16,7 +16,7 @@ class ListsController extends RestBaseController
 {
 
     /**
-     * [getRecommendedLists 推荐列表]
+     * [推荐文章列表]
      * @Author:   wuwu<15093565100@163.com>
      * @DateTime: 2017-07-17T11:36:51+0800
      * @since:    1.0
@@ -25,7 +25,7 @@ class ListsController extends RestBaseController
     {
         $num           = $this->request->has('num') ? $this->request->param('num') : 10;
         $next_id       = $this->request->has('next_id') ? $this->request->param('next_id') : 0;
-        $list['datas'] = PortalPost::recommendedList($next_id, $num);
+        $list['list']  = PortalPost::recommendedList($next_id, $num);
         $list['limit'] = [$next_id, $num];
         $this->success('ok', $list);
     }

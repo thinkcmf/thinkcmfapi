@@ -37,8 +37,8 @@ class ArticlesController extends RestBaseController
             }
         }
         $params['where']['post_type'] = 1;
-        $datas                        = $this->postModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data                         = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 
     /**
@@ -53,11 +53,11 @@ class ArticlesController extends RestBaseController
             $params                       = $this->request->get();
             $params['where']['post_type'] = 1;
             $params['id']                 = $id;
-            $datas                        = $this->postModel->getDatas($params);
+            $data                         = $this->postModel->getDatas($params);
             $tagModel                     = new PortalTagPostModel;
             $postIds                      = $tagModel->getRelationPostIds($id);
             $posts                        = $this->postModel->getRelationPosts($postIds);
-            $this->success('请求成功!', [$datas, $posts]);
+            $this->success('请求成功!', [$data, $posts]);
         }
     }
 
@@ -68,8 +68,8 @@ class ArticlesController extends RestBaseController
     {
         $params = $this->request->get();
         $userId = $this->getUserId();
-        $datas  = $this->postModel->getUserArticles($userId, $params);
-        $this->success('请求成功!', $datas);
+        $data   = $this->postModel->getUserArticles($userId, $params);
+        $this->success('请求成功!', $data);
     }
 
     /**
