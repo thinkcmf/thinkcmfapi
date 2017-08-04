@@ -25,8 +25,6 @@ class ArticlesController extends RestBaseController
 
     /**
      * 显示文章列表
-     *
-     * @return \think\Response
      */
     public function index()
     {
@@ -45,9 +43,7 @@ class ArticlesController extends RestBaseController
 
     /**
      * 显示指定的文章
-     *
-     * @param  int $id
-     * @return \think\Response
+     * @param int $id
      */
     public function read($id)
     {
@@ -70,9 +66,9 @@ class ArticlesController extends RestBaseController
      */
     public function my()
     {
-        $params     =   $this->request->get();
-        $userId     =   $this->getUserId();
-        $datas      =   $this->postModel->getUserArticles($userId,$params);
+        $params = $this->request->get();
+        $userId = $this->getUserId();
+        $datas  = $this->postModel->getUserArticles($userId, $params);
         $this->success('请求成功!', $datas);
     }
 
@@ -81,9 +77,9 @@ class ArticlesController extends RestBaseController
      */
     public function save()
     {
-        $datas             =   $this->request->post();
-        $datas['user_id']  =   $this->getUserId();
-        $result            =   $this->validate($datas, 'Articles.article');
+        $datas            = $this->request->post();
+        $datas['user_id'] = $this->getUserId();
+        $result           = $this->validate($datas, 'Articles.article');
         if ($result !== true) {
             $this->error($result);
         }
@@ -101,15 +97,15 @@ class ArticlesController extends RestBaseController
      */
     public function update($id)
     {
-        $data              =   $this->request->put();
-        $result            =   $this->validate($data, 'Articles.article');
+        $data   = $this->request->put();
+        $result = $this->validate($data, 'Articles.article');
         if ($result !== true) {
             $this->error($result);
         }
         if (empty($id)) {
             $this->error('无效的文章id');
         }
-        $result = $this->postModel->editArticle($data,$id,$this->getUserId());
+        $result = $this->postModel->editArticle($data, $id, $this->getUserId());
         if ($result === false) {
             $this->error('编辑失败！');
         } else {
@@ -119,7 +115,6 @@ class ArticlesController extends RestBaseController
 
     /**
      * 删除指定资源
-     *
      * @param  int $id
      */
     public function delete($id)
@@ -127,7 +122,7 @@ class ArticlesController extends RestBaseController
         if (empty($id)) {
             $this->error('无效的文章id');
         }
-        $result = $this->postModel->deleteArticle($id,$this->getUserId());
+        $result = $this->postModel->deleteArticle($id, $this->getUserId());
         if ($result == -1) {
             $this->error('文章已删除');
         }
@@ -143,11 +138,11 @@ class ArticlesController extends RestBaseController
      */
     public function deletes()
     {
-        $ids     =  $this->request->post('ids/a');
+        $ids = $this->request->post('ids/a');
         if (empty($ids)) {
             $this->error('文章id不能为空');
         }
-        $result  =  $this->postModel->deleteArticle($ids,$this->getUserId());
+        $result = $this->postModel->deleteArticle($ids, $this->getUserId());
         if ($result == -1) {
             $this->error('文章已删除');
         }
