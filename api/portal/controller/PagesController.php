@@ -24,8 +24,6 @@ class PagesController extends RestBaseController
 
     /**
      * 显示单页列表
-     *
-     * @return \think\Response
      */
     public function index()
     {
@@ -37,16 +35,14 @@ class PagesController extends RestBaseController
 
     /**
      * 显示指定的单页
-     *
-     * @param  int $id
-     * @return void
+     * @param int $id
      */
     public function read($id)
     {
         $params                       = $this->request->get();
         $params['where']['post_type'] = 2;
         $params['id']                 = $id;
-        $datas                        = $this->postModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data                         = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 }
