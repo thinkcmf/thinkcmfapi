@@ -392,7 +392,7 @@ class PortalPostModel extends CommonModel
      * @param int $userId 文章所属用户id  [可选]
      * @return bool|int 删除结果  true 成功 false 失败  -1 文章不存在
      */
-    public function deleteArticle($ids, $userId = '')
+    public function deleteArticle($ids, $userId)
     {
         $time   = time();
         $result = false;

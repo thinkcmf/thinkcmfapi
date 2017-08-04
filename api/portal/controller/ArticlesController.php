@@ -24,7 +24,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 显示文章列表
+     * 文章列表
      */
     public function index()
     {
@@ -42,7 +42,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 显示指定的文章
+     * 获取指定的文章
      * @param int $id
      */
     public function read($id)
@@ -77,24 +77,23 @@ class ArticlesController extends RestBaseController
      */
     public function save()
     {
-        $datas            = $this->request->post();
-        $datas['user_id'] = $this->getUserId();
-        $result           = $this->validate($datas, 'Articles.article');
+        $data            = $this->request->post();
+        $data['user_id'] = $this->getUserId();
+        $result          = $this->validate($data, 'Articles.article');
         if ($result !== true) {
             $this->error($result);
         }
 
-        if (empty($datas['published_time'])) {
-            $datas['published_time'] = time();
+        if (empty($data['published_time'])) {
+            $data['published_time'] = time();
         }
 
-        $this->postModel->addArticle($datas);
+        $this->postModel->addArticle($data);
         $this->success('添加成功！');
     }
 
     /**
      * 更新文章
-     *
      * @param  int $id
      */
     public function update($id)
