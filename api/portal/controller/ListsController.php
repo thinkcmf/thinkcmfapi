@@ -9,7 +9,7 @@
 namespace api\portal\controller;
 
 use api\portal\model\PortalCategoryModel as PortalCategory;
-use api\portal\model\PortalPostModel as PortalPost;
+use api\portal\service\PortalPostModel as PortalPost;
 use cmf\controller\RestBaseController;
 
 class ListsController extends RestBaseController
