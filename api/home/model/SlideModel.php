@@ -26,7 +26,7 @@ class SlideModel extends Model
      */
     protected function base($query)
     {
-        $query->where('status', 1);
+        $query->where('status', 1)->where('delete_time', 0);
     }
 
     /**

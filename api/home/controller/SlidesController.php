@@ -36,7 +36,7 @@ class SlidesController extends RestBaseController
         $data      = $obj->SlideList($map);
 
         //剔除分类状态隐藏 剔除分类下显示数据为空
-        if ($data->isEmpty() || empty($data->toArray()[0]['slide_item_model'])) {
+        if ($data->isEmpty() || empty($data->toArray()[0]['items'])) {
             $this->error('该组幻灯片显示数据为空');
         }
 
