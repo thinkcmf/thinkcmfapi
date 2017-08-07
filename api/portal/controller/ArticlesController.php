@@ -54,10 +54,7 @@ class ArticlesController extends RestBaseController
             $params['where']['post_type'] = 1;
             $params['id']                 = $id;
             $data                         = $this->postModel->getDatas($params);
-            $tagModel                     = new PortalTagPostModel;
-            $postIds                      = $tagModel->getRelationPostIds($id);
-            $posts                        = $this->postModel->getRelationPosts($postIds);
-            $this->success('请求成功!', [$data, $posts]);
+            $this->success('请求成功!', $data);
         }
     }
 
