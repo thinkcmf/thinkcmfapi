@@ -35,7 +35,7 @@ class SlideModel extends Model
      * @DateTime: 2017-05-25T23:30:27+0800
      * @since:    1.0
      */
-    protected function SlideItemModel()
+    protected function items()
     {
         return $this->hasMany('SlideItemModel');
     }
@@ -48,7 +48,7 @@ class SlideModel extends Model
      */
     public function SlideList($map)
     {
-        $data = $this->relation('slide_item_model')->field(true)->where($map)->select();
+        $data = $this->relation('items')->field(true)->where($map)->select();
         return $data;
     }
 

@@ -23,14 +23,15 @@ class SlidesController extends RestBaseController
      * @DateTime: 2017-05-25T20:48:53+0800
      * @since:    1.0
      */
-    public function index()
+    public function read()
     {
         //slide为空或不存在抛出异常
-        if (!$this->request->has('slide') || empty($this->request->param('slide'))) {
-            $this->error('缺少slide参数');
+        $id = $this->request->param('id', 0, 'intval');
+        if (empty($id)) {
+            $this->error('缺少ID参数');
         }
 
-        $map['id'] = $this->request->param('slide');
+        $map['id'] = $id;
         $obj       = new SlideModel();
         $data      = $obj->SlideList($map);
 
