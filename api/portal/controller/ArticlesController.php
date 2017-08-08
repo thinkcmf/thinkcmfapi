@@ -56,4 +56,19 @@ class ArticlesController extends RestBaseController
             $this->success('请求成功!', $data);
         }
     }
+
+    public function search()
+    {
+	    $params = $this->request->get();
+	    if (!empty($params['keyword'])) {
+	    	$params['where'] = [
+	    		'post_type'     =>  1,
+			    'post_title|post_keywords|post_excerpt' =>  ['like','%' . $params['keyword'] . '%']
+		    ];
+		    $data            = $this->postModel->getDatas($params);
+		    $this->success('请求成功!', $data);
+	    } else {
+	    	$this->error('搜索关键词不能为空！');
+	    }
+    }
 }
