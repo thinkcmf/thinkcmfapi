@@ -12,6 +12,7 @@ use api\portal\model\PortalPostModel as PortalPost;
 use api\portal\model\PortalCategoryModel as PortalCategory;
 class PortalPostModel extends PortalPost
 {
+	protected $name = "portal_post";
 	/**
 	 * [recommendedList 推荐列表]
 	 * @Author:   wuwu<15093565100@163.com>
@@ -44,7 +45,7 @@ class PortalPostModel extends PortalPost
 		$limit    = "{$next_id},{$num}";
 		$Postlist = PortalCategory::categoryPostIds($category_id);
 		$field    = 'id,recommended,user_id,post_like,post_hits,comment_count,create_time,update_time,published_time,post_title,post_excerpt,more';
-		$list     = self::with('user')->field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select();
+		$list     = self::with('user')->field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select()->toJson();
 		return $list;
 	}
 }
