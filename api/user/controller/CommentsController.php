@@ -115,4 +115,24 @@ class CommentsController extends RestUserBaseController
             $this->success('评论获取成功!', $datas);
         }
     }
+
+    /**
+     * [delComments 删除评论]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-08-11T22:08:56+0800
+     * @since:    1.0
+     * @return
+     */
+    public function delComments()
+    {
+        $input   = $this->request->param();
+        $id      = $this->request->has('id') ? $input['id'] : $this->error('id不能为为空');
+        $comment = new Comment();
+        if (Comment::destroy($id)) {
+            $this->success('删除成功');
+        } else {
+            $this->error('删除失败');
+        }
+    }
+}
 }
