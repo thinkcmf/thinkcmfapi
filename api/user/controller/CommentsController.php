@@ -190,7 +190,6 @@ class CommentsController extends RestUserBaseController
         }
         $data['user_id'] = $this->getUserId();
         $userData        = User::field(true)->find($data['user_id']);
-		dump($userData);
         if (!$userData) {
             $this->error('评论用户不存在');
         }
