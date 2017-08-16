@@ -73,17 +73,8 @@ class UserFavoriteModel extends Model
      * @since:    1.0
      * @return    [type]                    [description]
      */
-    public function unsetFavorite($object_id, $table_name)
+    public function unsetFavorite($id)
     {
-        //根据id,table删除收藏
-        if (empty($object_id)) {
-            return false;
-        } else if (empty($table_name)) {
-            return false;
-        }
-        $map['object_id']  = $object_id;
-        $map['table_name'] = $table_name;
-        return self::destroy($map); //执行删除
-
+        return self::destroy($id); //执行删除
     }
 }

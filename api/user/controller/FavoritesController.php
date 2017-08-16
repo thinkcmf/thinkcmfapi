@@ -98,10 +98,10 @@ class FavoritesController extends RestUserBaseController
     public function unsetFavorites()
     {
         $input = $this->request->param();
-        if ($this->userFavoriteModel->unsetFavorite($input['oid'], $input['table'])) {
-            $this->success('请求成功');
+        if ($this->userFavoriteModel->unsetFavorite($input['id'])) {
+            $this->success('取消成功');
         } else {
-            $this->error('请求失败');
+            $this->error('取消失败');
         }
 
     }
