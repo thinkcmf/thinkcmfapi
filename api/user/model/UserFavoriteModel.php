@@ -63,7 +63,7 @@ class UserFavoriteModel extends Model
     {
         //获取收藏内容信息
         $Favorite = self::create($data);
-        return $Favorite->save();
+        return $Favorite->id;
     }
 
     /**
