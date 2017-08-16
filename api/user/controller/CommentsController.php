@@ -189,8 +189,9 @@ class CommentsController extends RestUserBaseController
             $data['path'] = '0,';
         }
         $data['user_id'] = $this->getUserId();
-        $userData        = User::field('user_nickname', 'user_email', )->find($data['userid']);
-        if (!$user) {
+        $userData        = User::field(true)->find($data['user_id']);
+		dump($userData);
+        if (!$userData) {
             $this->error('评论用户不存在');
         }
 
