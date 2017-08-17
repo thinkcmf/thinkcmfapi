@@ -87,7 +87,6 @@ class PortalCategoryModel extends CommonModel
      */
     public static function categoryPostIds($category_id)
     {
-        $ids      = '';
         $post_ids = self::relation('PostIds')->field(true)->where('id', $category_id)->find();
         foreach ($post_ids['PostIds'] as $key => $id) {
             $ids[] = $id['post_id'];
