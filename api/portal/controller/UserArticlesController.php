@@ -6,12 +6,12 @@
 // +----------------------------------------------------------------------
 // | Author: pl125 <xskjs888@163.com>
 // +----------------------------------------------------------------------
-namespace api\user\controller;
+namespace api\portal\controller;
 
 use cmf\controller\RestUserBaseController;
-use api\user\model\PortalPostModel;
+use api\portal\logic\PortalPostModel;
 
-class ArticlesController extends RestUserBaseController
+class UserArticlesController extends RestUserBaseController
 {
 	protected $postModel;
 
@@ -128,5 +128,16 @@ class ArticlesController extends RestUserBaseController
 		} else {
 			$this->error('删除失败！');
 		}
+	}
+
+	/**
+	 * 我的文章列表
+	 */
+	public function my()
+	{
+		$params = $this->request->get();
+		$userId = $this->getUserId();
+		$data   = $this->postModel->getUserArticles($userId, $params);
+		$this->success('请求成功!', $data);
 	}
 }

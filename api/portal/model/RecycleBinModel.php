@@ -6,11 +6,11 @@
 // +----------------------------------------------------------------------
 // | Author: pl125 <xskjs888@163.com>
 // +----------------------------------------------------------------------
-namespace api\user\model;
+namespace api\portal\model;
 
 use think\Model;
 
-class PortalCategoryModel extends Model
+class RecycleBinModel extends Model
 {
-    //
+
 }

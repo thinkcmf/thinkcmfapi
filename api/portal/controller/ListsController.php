@@ -9,24 +9,23 @@
 namespace api\portal\controller;
 
 use api\portal\model\PortalCategoryModel as PortalCategory;
-use api\portal\model\PortalPostModel as PortalPost;
+use api\portal\service\PortalPostModel as PortalPost;
 use cmf\controller\RestBaseController;
 
 class ListsController extends RestBaseController
 {
 
     /**
-     * [getRecommendedLists 推荐列表]
+     * [推荐文章列表]
      * @Author:   wuwu<15093565100@163.com>
      * @DateTime: 2017-07-17T11:36:51+0800
      * @since:    1.0
-     * @return    [type]                   [json数据]
      */
-    public function getRecommendedLists()
+    public function recommended()
     {
         $num           = $this->request->has('num') ? $this->request->param('num') : 10;
         $next_id       = $this->request->has('next_id') ? $this->request->param('next_id') : 0;
-        $list['datas'] = PortalPost::recommendedList($next_id, $num);
+        $list['list']  = PortalPost::recommendedList($next_id, $num);
         $list['limit'] = [$next_id, $num];
         $this->success('ok', $list);
     }
@@ -36,7 +35,6 @@ class ListsController extends RestBaseController
      * @Author:    wuwu<15093565100@163.com>
      * @DateTime: 2017-07-17T15:22:41+0800
      * @since:    1.0
-     * @return    [type]                   [description]
      */
     public function getCategoryPostLists()
     {

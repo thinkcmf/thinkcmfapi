@@ -215,7 +215,7 @@ return [
 
     'database'                => [
         // 数据库调试模式
-        'debug'           => false,
+        'debug'           => true,
         // 数据集返回类型
         'resultset_type'  => 'collection',
         // 自动写入时间戳字段

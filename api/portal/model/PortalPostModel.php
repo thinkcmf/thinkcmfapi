@@ -10,7 +10,6 @@
 namespace api\portal\model;
 
 use api\common\model\CommonModel;
-use api\portal\model\PortalCategoryModel as PortalCategory;
 
 class PortalPostModel extends CommonModel
 {
@@ -21,6 +20,15 @@ class PortalPostModel extends CommonModel
         'create_time', 'update_time', 'published_time', 'post_title', 'post_keywords',
         'post_excerpt', 'post_source', 'post_content', 'more', 'user_nickname',
         'user', 'category_id'
+    ];
+
+	//设置只读字段
+	protected $readonly = ['user_id'];
+	// 开启自动写入时间戳字段
+	protected $autoWriteTimestamp = true;
+    //类型转换
+    protected $type = [
+        'more' => 'array',
     ];
     //模型关联方法
     protected $relationFilter = ['user'];
@@ -33,6 +41,91 @@ class PortalPostModel extends CommonModel
         $query->where('delete_time', 0)
             ->where('post_status', 1)
             ->whereTime('published_time', 'between', [1, time()]);
+    }
+    /**
+     * 关联 user表
+     * @return $this
+     */
+    public function user()
+    {
+        return $this->belongsTo('api\portal\model\UserModel', 'user_id');
+    }
+
+    /**
+     * 关联 user表
+     * @return $this
+     */
+    public function articleUser()
+    {
+        return $this->belongsTo('api\portal\model\UserModel', 'user_id')->field('id,user_nickname');
+    }
+	/**
+	 * 关联分类表
+	 * @return $this
+	 */
+	public function categories()
+	{
+		return $this->belongsToMany('api\portal\model\PortalCategoryModel', 'portal_category_post', 'category_id', 'post_id');
+	}
+
+	/**
+	 * 关联标签表
+	 * @return $this
+	 */
+	public function tags()
+	{
+		return $this->belongsToMany('api\portal\model\PortalTagModel', 'portal_tag_post', 'tag_id', 'post_id');
+	}
+
+	/**
+	 * 关联 回收站 表
+	 */
+	public function recycleBin()
+	{
+		return $this->hasOne('api\portal\model\RecycleBinModel', 'object_id');
+	}
+
+    /**
+     * published_time   自动转化
+     * @param $value
+     * @return string
+     */
+    public function getPublishedTimeAttr($value)
+    {
+        return date('Y-m-d H:i:s', $value);
+    }
+
+    /**
+     * published_time   自动转化
+     * @param $value
+     * @return int
+     */
+    public function setPublishedTimeAttr($value)
+    {
+        if (is_numeric($value)) {
+            return $value;
+        }
+        return strtotime($value);
+    }
+
+    /**
+     * post_content 自动转化
+     * @param $value
+     * @return string
+     */
+    public function getPostContentAttr($value)
+    {
+        return cmf_replace_content_file_url(htmlspecialchars_decode($value));
+    }
+
+    /**
+     * post_content 自动转化
+     * @param $value
+     * @return string
+     */
+    public function setPostContentAttr($value)
+    {
+        return htmlspecialchars(cmf_replace_content_file_url(htmlspecialchars_decode($value), true));
     }
 
     /**
@@ -59,76 +152,5 @@ class PortalPostModel extends CommonModel
             }
         }
         return $more;
-    }
-
-    /**
-     * 关联 user表
-     * @return $this
-     */
-    public function user()
-    {
-        return $this->belongsTo('UserModel', 'user_id');
-    }
-
-    /**
-     * 关联 user表
-     * @return $this
-     */
-    public function articleUser()
-    {
-        return $this->belongsTo('UserModel', 'user_id')->field('id,user_nickname');
-    }
-
-    /**
-     * 获取相关文章
-     * @param int|string|array $postIds 文章id
-     * @return array
-     */
-    public function getRelationPosts($postIds)
-    {
-        $posts = $this->with('articleUser')
-            ->field('id,post_title,user_id,is_top,post_hits,post_like,comment_count,more')
-            ->whereIn('id', $postIds)
-            ->select();
-        foreach ($posts as $post) {
-            $post->appendRelationAttr('articleUser', 'user_nickname');
-        }
-        return $posts;
-    }
-
-    /**
-     * [recommendedList 推荐列表]
-     * @Author:   wuwu<15093565100@163.com>
-     * @DateTime: 2017-07-17T11:06:47+0800
-     * @since:    1.0
-     * @param     integer $next_id [最后索引值]
-     * @param     integer $num [一页多少条 默认10]
-     * @return    [type]                            [数据]
-     */
-    public static function recommendedList($next_id = 0, $num = 10)
-    {
-        $limit = "{$next_id},{$num}";
-        $field = 'id,recommended,user_id,post_like,post_hits,comment_count,create_time,update_time,published_time,post_title,post_excerpt,more';
-        $list  = self::with('user')->field($field)->where('recommended', 1)->order('published_time DESC')->limit($limit)->select();
-        return $list;
-    }
-
-    /**
-     * [categoryPostList 分类文章列表]
-     * @Author:   wuwu<15093565100@163.com>
-     * @DateTime: 2017-07-17T15:16:26+0800
-     * @since:    1.0
-     * @param     [type]                   $category_id [分类ID]
-     * @param     integer $next_id [limit索引]
-     * @param     integer $num [limit每页数量]
-     * @return    [type]                                [description]
-     */
-    public static function categoryPostList($category_id, $next_id = 0, $num = 10)
-    {
-        $limit    = "{$next_id},{$num}";
-        $Postlist = PortalCategory::categoryPostIds($category_id);
-        $field    = 'id,recommended,user_id,post_like,post_hits,comment_count,create_time,update_time,published_time,post_title,post_excerpt,more';
-        $list     = self::with('user')->field($field)->whereIn('id', $Postlist['PostIds'])->order('published_time DESC')->limit($limit)->select();
-        return $list;
     }
 }

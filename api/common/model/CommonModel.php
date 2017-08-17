@@ -26,39 +26,35 @@ class CommonModel extends Model
         if (empty($params)) {
             return $this->select();
         }
+
         $this->setCondition($params);
         if (!empty($params['id'])) {
             $datas = $this->find();
         } else {
             $datas = $this->select();
         }
+
         if (!empty($params['relation'])) {
-            if ($this->isWhite($params['relation'])) {
+            $allowedRelations = $this->allowedRelations($params['relation']);
+            if (!empty($allowedRelations)) {
                 if (!empty($params['id'])) {
-                    $relationParams =   $params;
-                    unset($relationParams['id']);
-                    if (!empty($relationParams)) {
-                        // 获取关联模型实例
-	                    $relation       =   $params['relation'];
-	                    $_queryObject   =   $datas->$relation();
-                        $modelName      =    '\\' . $_queryObject->getmodel();
-                        $relationModel  =    new $modelName;
-                        //设置关联模型条件过滤
-                        $relationParams =   $this->paramsFilter($relationParams, $relationModel);
-                        $relationModel  =   $this->setParamsQuery($relationParams, $_queryObject);
-                        $datas          =   $datas->toArray();
-                        $datas[$params['relation']]       =   $relationModel->select();
+                    if (!empty($datas)) {
+                        $datas->append($allowedRelations);
+                    }
+                } else {
+                    if (count($datas) > 0) {
+                        $datas->load($allowedRelations);
                     }
                 }
             }
         }
+
         return $datas;
     }
 
     /**
      * @access public
      * @param array $params 过滤参数
-     * @param array $relationParams 关联模型过滤参数
      * @return $this
      */
     public function setCondition($params)
@@ -67,13 +63,12 @@ class CommonModel extends Model
             return $this;
         }
         if (!empty($params['relation'])) {
-            $relations       = $this->strToArr($params['relation']);
-            $enableRelations = array_intersect($relations, $this->relationFilter);
-            if (!empty($enableRelations)) {
-                if (!empty($params['id']) && count($enableRelations == 1)) {
+            $allowedRelations = $this->allowedRelations($params['relation']);
+            if (!empty($allowedRelations)) {
+                if (!empty($params['id']) && count($allowedRelations) == 1) {
                     $this->paramsFilter($params);
                 } else {
-                    $this->paramsFilter($params)->with($enableRelations);
+                    $this->paramsFilter($params);//->with($allowedRelations);
                 }
             }
         } else {
@@ -88,7 +83,7 @@ class CommonModel extends Model
      * @param model $model 关联模型
      * @return model|array  $this|链式查询条件数组
      */
-    public function paramsFilter($params, $model = '')
+    public function paramsFilter($params, $model = null)
     {
         if (!empty($model)) {
             $condition = [];
@@ -100,6 +95,7 @@ class CommonModel extends Model
         if (isset($_this->visible)) {
             $whiteParams = $_this->visible;
         }
+
         // 设置field字段过滤
         if (!empty($params['field'])) {
             if (!empty($whiteParams)) {
@@ -118,6 +114,7 @@ class CommonModel extends Model
                 }
             }
         }
+
         // 设置id，ids
         if (!empty($params['ids'])) {
             $ids = $this->strToArr($params['ids']);
@@ -125,6 +122,7 @@ class CommonModel extends Model
                 $ids[$key] = intval($value);
             }
         }
+
         if (!empty($params['id'])) {
             $id = intval($params['id']);
             if (!empty($id)) {
@@ -137,32 +135,14 @@ class CommonModel extends Model
                 $condition['ids'] = ['id', 'in', $ids];
             }
         }
+
         if (!empty($params['where'])) {
             if (empty($model)) {
                 $_this->where($params['where']);
             }
         }
-        // 设置limit查询
-        if (!empty($params['limit'])) {
-            $limitArr = $this->strToArr($params['limit']);
-            $limit    = [];
-            foreach ($limitArr as $value) {
-                $limit[] = intval($value);
-            }
-            if (count($limit) == 1) {
-                if (empty($model)) {
-                    $_this->limit($limit[0]);
-                } else {
-                    $condition['limit'] = $limit[0];
-                }
-            } elseif (count($limit) == 2) {
-                if (empty($model)) {
-                    $_this->limit($limit[0], $limit[1]);
-                } else {
-                    $condition['limit'] = $limit[0] . ',' . $limit[1];
-                }
-            }
-        }
+
+
         // 设置分页
         if (!empty($params['page'])) {
             $pageArr = $this->strToArr($params['page']);
@@ -183,7 +163,27 @@ class CommonModel extends Model
                     $condition['page'] = $page[0] . ',' . $page[1];
                 }
             }
+        } elseif (!empty($params['limit'])) { // 设置limit查询
+            $limitArr = $this->strToArr($params['limit']);
+            $limit    = [];
+            foreach ($limitArr as $value) {
+                $limit[] = intval($value);
+            }
+            if (count($limit) == 1) {
+                if (empty($model)) {
+                    $_this->limit($limit[0]);
+                } else {
+                    $condition['limit'] = $limit[0];
+                }
+            } elseif (count($limit) == 2) {
+                if (empty($model)) {
+                    $_this->limit($limit[0], $limit[1]);
+                } else {
+                    $condition['limit'] = $limit[0] . ',' . $limit[1];
+                }
+            }
         }
+
         //设置排序
         if (!empty($params['order'])) {
             $order = $this->strToArr($params['order']);
@@ -207,6 +207,7 @@ class CommonModel extends Model
                 }
             }
         }
+
         if (isset($condition)) {
             return $condition;
         } else {
@@ -221,7 +222,7 @@ class CommonModel extends Model
      * @param model $model 模型
      * @return $this
      */
-    public function setParamsQuery($params, $model = '')
+    public function setParamsQuery($params, $model = null)
     {
         if (!empty($model)) {
             $_this = $model;
@@ -245,6 +246,19 @@ class CommonModel extends Model
             $_this->order($params['order']);
         }
         return $_this;
+    }
+
+    public function allowedRelations($relations)
+    {
+        if (is_string($relations)) {
+            $relations = explode(',', $relations);
+        }
+
+        if (!is_array($relations)) {
+            return false;
+        }
+
+        return array_intersect($this->relationFilter, $relations);
     }
 
     /**

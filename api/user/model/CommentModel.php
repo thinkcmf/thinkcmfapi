@@ -11,7 +11,7 @@
 // | Date: 2017-7-29
 // +----------------------------------------------------------------------
 
-namespace api\comment\model;
+namespace api\user\model;
 
 use think\Model;
 
@@ -110,5 +110,24 @@ class CommentModel extends Model
         $data['current'] = $current;
         return $data;
 
+    }
+
+    /**
+     * [setComment 添加评论]
+     * @Author:   wuwu<15093565100@163.com>
+     * @DateTime: 2017-08-15T23:57:04+0800
+     * @since:    1.0
+     */
+    public static function setComment($data)
+    {
+        if (!$data) {
+            return false;
+        }
+
+        if ($obj = self::create($data)) {
+            return $obj->id;
+        } else {
+            return false;
+        }
     }
 }

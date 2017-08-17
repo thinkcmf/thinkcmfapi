@@ -23,28 +23,24 @@ class CategoriesController extends RestBaseController
     }
 
     /**
-     * 显示分类列表
-     *
-     * @return \think\Response
+     * 获取分类列表
      */
     public function index()
     {
         $params = $this->request->get();
-        $datas  = $this->categoryModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data   = $this->categoryModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 
     /**
      * 显示指定的分类
-     *
-     * @param  int $id
-     * @return \think\Response
+     * @param int $id
      */
     public function read($id)
     {
         $params       = $this->request->get();
         $params['id'] = $id;
-        $datas        = $this->categoryModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data         = $this->categoryModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 }

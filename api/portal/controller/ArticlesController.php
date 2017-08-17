@@ -11,7 +11,6 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
-use api\portal\model\PortalTagPostModel;
 
 class ArticlesController extends RestBaseController
 {
@@ -24,9 +23,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 显示文章列表
-     *
-     * @return \think\Response
+     * 文章列表
      */
     public function index()
     {
@@ -39,15 +36,13 @@ class ArticlesController extends RestBaseController
             }
         }
         $params['where']['post_type'] = 1;
-        $datas                        = $this->postModel->getDatas($params);
-        $this->success('请求成功!', $datas);
+        $data                         = $this->postModel->getDatas($params);
+        $this->success('请求成功!', $data);
     }
 
     /**
-     * 显示指定的文章
-     *
-     * @param  int $id
-     * @return \think\Response
+     * 获取指定的文章
+     * @param int $id
      */
     public function read($id)
     {
@@ -57,11 +52,23 @@ class ArticlesController extends RestBaseController
             $params                       = $this->request->get();
             $params['where']['post_type'] = 1;
             $params['id']                 = $id;
-            $datas                        = $this->postModel->getDatas($params);
-            $tagModel                     = new PortalTagPostModel;
-            $postIds                      = $tagModel->getRelationPostIds($id);
-            $posts                        = $this->postModel->getRelationPosts($postIds);
-            $this->success('请求成功!', [$datas, $posts]);
+            $data                         = $this->postModel->getDatas($params);
+            $this->success('请求成功!', $data);
         }
+    }
+
+    public function search()
+    {
+	    $params = $this->request->get();
+	    if (!empty($params['keyword'])) {
+	    	$params['where'] = [
+	    		'post_type'  =>  1,
+			    'post_title|post_keywords|post_excerpt' =>  ['like','%' . $params['keyword'] . '%']
+		    ];
+		    $data            = $this->postModel->getDatas($params);
+		    $this->success('请求成功!', $data);
+	    } else {
+	    	$this->error('搜索关键词不能为空！');
+	    }
     }
 }

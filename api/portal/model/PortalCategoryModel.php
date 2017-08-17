@@ -17,12 +17,14 @@ class PortalCategoryModel extends CommonModel
     protected $type = [
         'more' => 'array',
     ];
+
     //可查询字段
     protected $visible = [
         'id', 'name', 'description', 'post_count',
         'seo_title', 'seo_keywords', 'seo_description',
-        'more', 'PostIds','articles'
+        'more', 'PostIds', 'articles'
     ];
+
     //模型关联方法
     protected $relationFilter = ['articles'];
 
@@ -32,7 +34,7 @@ class PortalCategoryModel extends CommonModel
     protected function base($query)
     {
         $query->where('delete_time', 0)
-            ->where('status', 1);
+            ->where('cmf_portal_category.status', 1);
     }
 
     /**
