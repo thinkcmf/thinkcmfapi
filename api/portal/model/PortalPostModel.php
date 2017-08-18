@@ -22,16 +22,16 @@ class PortalPostModel extends CommonModel
         'user', 'category_id'
     ];
 
-	//设置只读字段
-	protected $readonly = ['user_id'];
-	// 开启自动写入时间戳字段
-	protected $autoWriteTimestamp = true;
+    //设置只读字段
+    protected $readonly = ['user_id'];
+    // 开启自动写入时间戳字段
+    protected $autoWriteTimestamp = true;
     //类型转换
     protected $type = [
         'more' => 'array',
     ];
     //模型关联方法
-    protected $relationFilter = ['user'];
+    protected $relationFilter = ['user', 'categories'];
 
     /**
      * 基础查询
@@ -42,6 +42,7 @@ class PortalPostModel extends CommonModel
             ->where('post_status', 1)
             ->whereTime('published_time', 'between', [1, time()]);
     }
+
     /**
      * 关联 user表
      * @return $this
@@ -59,31 +60,32 @@ class PortalPostModel extends CommonModel
     {
         return $this->belongsTo('api\portal\model\UserModel', 'user_id')->field('id,user_nickname');
     }
-	/**
-	 * 关联分类表
-	 * @return $this
-	 */
-	public function categories()
-	{
-		return $this->belongsToMany('api\portal\model\PortalCategoryModel', 'portal_category_post', 'category_id', 'post_id');
-	}
 
-	/**
-	 * 关联标签表
-	 * @return $this
-	 */
-	public function tags()
-	{
-		return $this->belongsToMany('api\portal\model\PortalTagModel', 'portal_tag_post', 'tag_id', 'post_id');
-	}
+    /**
+     * 关联分类表
+     * @return $this
+     */
+    public function categories()
+    {
+        return $this->belongsToMany('api\portal\model\PortalCategoryModel', 'portal_category_post', 'category_id', 'post_id');
+    }
 
-	/**
-	 * 关联 回收站 表
-	 */
-	public function recycleBin()
-	{
-		return $this->hasOne('api\portal\model\RecycleBinModel', 'object_id');
-	}
+    /**
+     * 关联标签表
+     * @return $this
+     */
+    public function tags()
+    {
+        return $this->belongsToMany('api\portal\model\PortalTagModel', 'portal_tag_post', 'tag_id', 'post_id');
+    }
+
+    /**
+     * 关联 回收站 表
+     */
+    public function recycleBin()
+    {
+        return $this->hasOne('api\portal\model\RecycleBinModel', 'object_id');
+    }
 
     /**
      * published_time   自动转化

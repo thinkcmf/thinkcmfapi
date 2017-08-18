@@ -13,9 +13,9 @@ use api\common\model\CommonModel;
 class UserModel extends CommonModel
 {
     //可查询字段
-    protected $visible = [
-        'articles.id', 'user_nickname', 'avatar', 'signature','user'
-    ];
+//    protected $visible = [
+//        'articles.id', 'user_nickname', 'avatar', 'signature','user'
+//    ];
     //模型关联方法
     protected $relationFilter = ['user'];
 

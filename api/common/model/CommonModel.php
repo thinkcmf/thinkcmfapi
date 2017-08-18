@@ -44,6 +44,7 @@ class CommonModel extends Model
                 } else {
                     if (count($datas) > 0) {
                         $datas->load($allowedRelations);
+                        $datas->append($allowedRelations);
                     }
                 }
             }
@@ -208,11 +209,7 @@ class CommonModel extends Model
             }
         }
 
-        if (isset($condition)) {
-            return $condition;
-        } else {
-            return $_this;
-        }
+        return $_this;
     }
 
     /**

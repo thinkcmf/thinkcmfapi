@@ -33,8 +33,8 @@ class PortalCategoryModel extends CommonModel
      */
     protected function base($query)
     {
-        $query->where('delete_time', 0)
-            ->where('cmf_portal_category.status', 1);
+        $query->alias('portal_category')->where('delete_time', 0)
+            ->where('portal_category.status', 1);
     }
 
     /**
