@@ -60,7 +60,7 @@ class ListsController extends RestBaseController
         if (!empty($param['relation'])) {
             if (count($articles) > 0) {
                 $articles->load('user');
-               $articles->append(['user']);
+                $articles->append(['user']);
             }
         }
 

@@ -87,8 +87,7 @@ class CommonModel extends Model
     public function paramsFilter($params, $model = null)
     {
         if (!empty($model)) {
-            $condition = [];
-            $_this     = $model;
+            $_this = $model;
         } else {
             $_this = $this;
         }
@@ -103,16 +102,10 @@ class CommonModel extends Model
                 $filterParams = $this->strToArr($params['field']);
                 $mixedField   = array_intersect($filterParams, $whiteParams);
             }
+
             if (!empty($mixedField)) {
-                if (empty($model)) {
-                    $_this->field($mixedField);
-                } else {
-                    $key = array_search('id', $mixedField);
-                    if (false !== $key) {
-                        $mixedField[$key] = 'articles.id';
-                    }
-                    $condition['field'] = $mixedField;
-                }
+
+                $_this->field($mixedField);
             }
         }
 
@@ -130,11 +123,7 @@ class CommonModel extends Model
                 return $_this->where('id', $id);
             }
         } elseif (!empty($ids)) {
-            if (empty($model)) {
-                $_this->where('id', 'in', $ids);
-            } else {
-                $condition['ids'] = ['id', 'in', $ids];
-            }
+            $_this->where('id', 'in', $ids);
         }
 
         if (!empty($params['where'])) {
@@ -152,17 +141,9 @@ class CommonModel extends Model
                 $page[] = intval($value);
             }
             if (count($page) == 1) {
-                if (empty($model)) {
-                    $_this->page($page[0]);
-                } else {
-                    $condition['page'] = $page[0];
-                }
+                $_this->page($page[0]);
             } elseif (count($page) == 2) {
-                if (empty($model)) {
-                    $_this->page($page[0], $page[1]);
-                } else {
-                    $condition['page'] = $page[0] . ',' . $page[1];
-                }
+                $_this->page($page[0], $page[1]);
             }
         } elseif (!empty($params['limit'])) { // 设置limit查询
             $limitArr = $this->strToArr($params['limit']);
@@ -171,17 +152,9 @@ class CommonModel extends Model
                 $limit[] = intval($value);
             }
             if (count($limit) == 1) {
-                if (empty($model)) {
-                    $_this->limit($limit[0]);
-                } else {
-                    $condition['limit'] = $limit[0];
-                }
+                $_this->limit($limit[0]);
             } elseif (count($limit) == 2) {
-                if (empty($model)) {
-                    $_this->limit($limit[0], $limit[1]);
-                } else {
-                    $condition['limit'] = $limit[0] . ',' . $limit[1];
-                }
+                $_this->limit($limit[0], $limit[1]);
             }
         }
 
@@ -200,12 +173,9 @@ class CommonModel extends Model
                     $orderWhere[$orderField] = $orderType;
                 }
             }
+
             if (!empty($orderWhere)) {
-                if (empty($model)) {
-                    $_this->order($orderWhere);
-                } else {
-                    $condition['order'] = $orderWhere;
-                }
+                $_this->order($orderWhere);
             }
         }
 
