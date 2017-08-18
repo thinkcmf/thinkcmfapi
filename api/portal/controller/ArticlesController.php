@@ -28,7 +28,7 @@ class ArticlesController extends RestBaseController
      */
     public function index()
     {
-        $params = $this->request->get();
+        $params                       = $this->request->get();
         $params['where']['post_type'] = 1;
         $data                         = $this->postModel->getDatas($params);
         $this->success('请求成功!', $data);
@@ -47,7 +47,12 @@ class ArticlesController extends RestBaseController
             $params['where']['post_type'] = 1;
             $params['id']                 = $id;
             $data                         = $this->postModel->getDatas($params);
-            $this->success('请求成功!', $data);
+            if (empty($data)) {
+                $this->error('文章不存在！');
+            } else {
+                $this->success('请求成功!', $data);
+            }
+
         }
     }
 

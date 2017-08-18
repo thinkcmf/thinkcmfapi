@@ -55,7 +55,7 @@ class ListsController extends RestBaseController
 
         $param = $this->request->param();
 
-        $articles = $portalCategoryModel->paramsFilter($param, $findCategory->articles())->select();
+        $articles = $portalCategoryModel->paramsFilter($param, $findCategory->articles()->alias('post'))->select();
 
         if (!empty($param['relation'])) {
             if (count($articles) > 0) {

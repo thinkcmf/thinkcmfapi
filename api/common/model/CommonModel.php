@@ -98,13 +98,14 @@ class CommonModel extends Model
 
         // 设置field字段过滤
         if (!empty($params['field'])) {
+            $filterParams = $this->strToArr($params['field']);
             if (!empty($whiteParams)) {
-                $filterParams = $this->strToArr($params['field']);
-                $mixedField   = array_intersect($filterParams, $whiteParams);
+                $mixedField = array_intersect($filterParams, $whiteParams);
+            } else {
+                $mixedField = $filterParams;
             }
 
             if (!empty($mixedField)) {
-
                 $_this->field($mixedField);
             }
         }
