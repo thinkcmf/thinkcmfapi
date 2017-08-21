@@ -165,6 +165,11 @@ class ProfileController extends RestUserBaseController
             if (empty($data)) {
                 $this->error('修改失败，提交表单为空！');
             }
+
+            if (!empty($data['birthday'])) {
+                $data['birthday'] = strtotime($data['birthday']);
+            }
+
             $upData = Db::name("user")->where('id', $userId)->field($fieldStr)->update($data);
             if ($upData !== false) {
                 $this->success('修改成功！');
