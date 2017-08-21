@@ -157,6 +157,8 @@ class CommonModel extends Model
             } elseif (count($limit) == 2) {
                 $_this->limit($limit[0], $limit[1]);
             }
+        } else {
+            $_this->limit(10);
         }
 
         //设置排序
