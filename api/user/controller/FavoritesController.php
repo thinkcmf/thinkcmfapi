@@ -97,12 +97,18 @@ class FavoritesController extends RestUserBaseController
      */
     public function unsetFavorites()
     {
-        $input = $this->request->param();
-        if ($this->userFavoriteModel->unsetFavorite($input['id'])) {
-            $this->success('取消成功');
-        } else {
-            $this->error('取消失败');
+        $id     = $this->request->param('id', 0, 'intval');
+        $userId = $this->getUserId();
+
+        $count = $this->userFavoriteModel->where(['id' => $id, 'user_id' => $userId])->count();
+
+        if ($count == 0) {
+            $this->error('收藏不存在,无法取消');
         }
+
+        $this->userFavoriteModel->where(['id' => $id])->delete();
+
+        $this->success('取消成功');
 
     }
 }
