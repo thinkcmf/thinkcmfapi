@@ -99,7 +99,7 @@ class PublicController extends RestAdminBaseController
         $this->success("登录成功!", ['token' => $token]);
     }
 
-    // 用户退出
+    // 管理员退出
     public function logout()
     {
         $this->success("退出成功!");

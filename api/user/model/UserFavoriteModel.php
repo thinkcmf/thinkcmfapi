@@ -9,12 +9,10 @@
 
 namespace api\user\model;
 
-use think\Model;
+use api\common\model\CommonModel;
 
-class UserFavoriteModel extends Model
+class UserFavoriteModel extends CommonModel
 {
-    protected $dateFormat = 'Y-m-d H:i:s';
-
     /**
      * [base 基础查询条件]
      */
@@ -30,6 +28,22 @@ class UserFavoriteModel extends Model
     protected function unionTable($table_name)
     {
         return $this->hasOne($table_name . 'Model', 'object_id');
+    }
+
+    /**
+     * url   自动转化
+     * @param $value
+     * @return string
+     */
+    public function getUrlAttr($value)
+    {
+        $url = json_decode($value,true);
+        if (!empty($url)) {
+            $url = url($url['action'], $url['param'], true, true);
+        } else {
+            $url = '';
+        }
+        return $url;
     }
 
     /**

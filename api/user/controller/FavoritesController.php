@@ -27,8 +27,15 @@ class FavoritesController extends RestUserBaseController
      */
     public function getFavorites()
     {
-        $userId       = $this->getUserId();
-        $favoriteData = $this->userFavoriteModel->where('user_id', $userId)->order('create_time', 'DESC')->select();
+        $userId = $this->getUserId();
+
+        $param          = $this->request->param();
+        $param['where'] = [
+            'user_id' => $userId
+        ];
+        $param['order'] = '-create_time';
+
+        $favoriteData = $this->userFavoriteModel->getDatas($param);
         $this->success('请求成功', $favoriteData);
     }
 
@@ -41,12 +48,13 @@ class FavoritesController extends RestUserBaseController
     public function setFavorites()
     {
         $input = $this->request->param();
+
         //组装数据
-        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table'], $input['oid']);
+        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table'], $input['object_id']);
         if (!$data) {
             $this->error('收藏失败');
         }
-        if ($this->userFavoriteModel->where('object_id', $input['oid'])->where('table_name', $input['table'])->count() > 0) {
+        if ($this->userFavoriteModel->where('object_id', $input['object_id'])->where('table_name', $input['table'])->count() > 0) {
             $this->error('已收藏');
         }
         if ($this->userFavoriteModel->setFavorite($data)) {
