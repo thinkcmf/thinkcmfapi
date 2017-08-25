@@ -13,9 +13,9 @@
 
 namespace api\user\model;
 
-use think\Model;
+use api\common\model\CommonModel;
 
-class CommentModel extends Model
+class CommentModel extends CommonModel
 {
 
     /**

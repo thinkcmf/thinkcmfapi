@@ -28,43 +28,16 @@ class CommentsController extends RestUserBaseController
      */
     public function getUserComments()
     {
-        $input          = $this->request->param();
-        $user_id        = $this->request->has('uid') ? $input['uid'] : $this->error('userid参数不存在');
-        $comment        = new Comment();
-        $map['user_id'] = $user_id;
-
+        $input                   = $this->request->param();
+        $id                      = $this->request->has('page') ? $input['page'] : $this->error('page参数不存在');
+        $user_id                 = $this->request->has('uid') ? $input['uid'] : $this->getUserId();
+        $comment                 = new Comment();
+        $map['where']['user_id'] = $user_id;
+        $map['order']            = '-create_time';
         //处理不同的情况
-        if (!$this->request->has('current') || empty($this->request->param('current'))) {
+        $favoriteData = $comment->getDatas($map);
+        $this->success('请求成功', $favoriteData);
 
-            if (!$this->request->has('num') || empty($this->request->param('num'))) {
-                $sqldata = $comment->page($map);
-            } else {
-                $num     = $this->request->param('num');
-                $sqldata = $comment->page($map, $num);
-            }
-
-        } else {
-            $current = $this->request->param('current');
-            if (!$this->request->has('num') || empty($this->request->param('num'))) {
-                $sqldata = $comment->page($map, 30, $current);
-            } else {
-                $num     = $this->request->param('num');
-                $sqldata = $comment->page($map, $num, $current);
-            }
-        }
-
-        $order = 'id DESC';
-
-        $data             = $comment->CommentList($map, $sqldata['limit'], $order);
-        $datas['datas']   = $data;
-        $datas['current'] = isset($current) ? $current : 1;
-        $datas['num']     = isset($num) ? $num : '';
-        //数据是否存在
-        if ($data->isEmpty()) {
-            $this->error('评论数据为空');
-        } else {
-            $this->success('评论获取成功!', $datas);
-        }
     }
 
     /**
