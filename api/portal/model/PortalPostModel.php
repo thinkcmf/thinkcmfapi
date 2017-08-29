@@ -165,10 +165,10 @@ class PortalPostModel extends CommonModel
             'post_type' => 1,
             'user_id'   => $userId
         ];
-        if (!empty($params)) {
-            $this->paramsFilter($params);
-        }
-        return $this->where($where)->select();
+
+        $params['where'] = $where;
+
+        return $this->getDatas($params);;
     }
 
     /**
