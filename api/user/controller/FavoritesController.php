@@ -50,7 +50,7 @@ class FavoritesController extends RestUserBaseController
         $input = $this->request->param();
 
         //组装数据
-        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table'], $input['object_id']);
+        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table_name'], $input['object_id']);
         if (!$data) {
             $this->error('收藏失败');
         }
@@ -89,7 +89,7 @@ class FavoritesController extends RestUserBaseController
             return false;
         }
         $data['title']       = $title;
-        $data['url']         = $url;
+        $data['url']         = htmlspecialchars_decode($url);
         $data['description'] = $description;
         $data['table_name']  = $table_name;
         $data['object_id']   = $object_id;

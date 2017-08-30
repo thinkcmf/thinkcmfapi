@@ -28,15 +28,18 @@ class CommentsController extends RestUserBaseController
      */
     public function getUserComments()
     {
-        $input                   = $this->request->param();
-        $id                      = $this->request->has('page') ? $input['page'] : $this->error('page参数不存在');
-        $user_id                 = $this->request->has('uid') ? $input['uid'] : $this->getUserId();
+        $input = $this->request->param();
+
         $comment                 = new Comment();
-        $map['where']['user_id'] = $user_id;
+        $map['where']['user_id'] = $this->getUserId();
         $map['order']            = '-create_time';
+        $map['relation']         = 'user,to_user';
+        if (!empty($input['page'])) {
+            $map['page'] = $input['page'];
+        }
         //处理不同的情况
-        $favoriteData = $comment->getDatas($map);
-        $this->success('请求成功', $favoriteData);
+        $data = $comment->getDatas($map);
+        $this->success('请求成功', $data);
 
     }
 
@@ -49,44 +52,26 @@ class CommentsController extends RestUserBaseController
      */
     public function getComments()
     {
-        $input             = $this->request->param();
-        $id                = $this->request->has('id') ? $input['id'] : $this->error('id参数不存在');
-        $table             = $this->request->has('table') ? $input['table'] : $this->error('table参数不存在');
-        $comment           = new Comment();
-        $map['object_id']  = $id;
-        $map['table_name'] = $table;
+        $input           = $this->request->param();
+        $id              = $this->request->has('object_id') ? $input['object_id'] : $this->error('id参数不存在');
+        $table           = $this->request->has('table_name') ? $input['table_name'] : $this->error('table参数不存在');
+        $comment         = new Comment();
+        $map['where']    = [
+            'object_id'  => $id,
+            'table_name' => $table
+        ];
+        $map['relation'] = 'user,to_user';
 
-        //处理不同的情况
-        if (!$this->request->has('current') || empty($this->request->param('current'))) {
-
-            if (!$this->request->has('num') || empty($this->request->param('num'))) {
-                $sqldata = $comment->page($map);
-            } else {
-                $num     = $this->request->param('num');
-                $sqldata = $comment->page($map, $num);
-            }
-
-        } else {
-            $current = $this->request->param('current');
-            if (!$this->request->has('num') || empty($this->request->param('num'))) {
-                $sqldata = $comment->page($map, 30, $current);
-            } else {
-                $num     = $this->request->param('num');
-                $sqldata = $comment->page($map, $num, $current);
-            }
+        if (!empty($input['page'])) {
+            $map['page'] = $input['page'];
         }
 
-        $order = 'id DESC';
-
-        $data             = $comment->CommentList($map, $sqldata['limit'], $order);
-        $datas['datas']   = $data;
-        $datas['current'] = isset($current) ? $current : 1;
-        $datas['num']     = isset($num) ? $num : '';
+        $data = $comment->getDatas($map);
         //数据是否存在
         if ($data->isEmpty()) {
             $this->error('评论数据为空');
         } else {
-            $this->success('评论获取成功!', $datas);
+            $this->success('评论获取成功!', $data);
         }
     }
 
@@ -99,13 +84,12 @@ class CommentsController extends RestUserBaseController
      */
     public function delComments()
     {
-        $input = $this->request->param();
-        $id    = $this->request->has('id') ? $input['id'] : $this->error('id参数不存在');
-        if (Comment::destroy($id)) {
-            $this->success('删除成功');
-        } else {
-            $this->error('删除失败');
-        }
+        $input  = $this->request->param();
+        $id     = $this->request->has('id') ? intval($input['id']) : $this->error('id参数不存在');
+        $userId = $this->getUserId();
+        Comment::destroy(['id' => $id, 'user_id' => $userId]);
+
+        $this->success('删除成功');
     }
 
     /**
@@ -118,9 +102,9 @@ class CommentsController extends RestUserBaseController
     {
         $data = $this->_setComments();
         if ($res = Comment::setComment($data)) {
-            $this->success('添加成功', $res);
+            $this->success('评论成功', $res);
         } else {
-            $this->error('添加失败');
+            $this->error('评论失败');
         }
     }
 
@@ -133,23 +117,22 @@ class CommentsController extends RestUserBaseController
     protected function _setComments()
     {
         $input              = $this->request->param();
-        $data['object_id']  = $this->request->has('oid') ? $input['oid'] : $this->error('oid参数不存在');
-        $data['table_name'] = $this->request->has('table') ? $input['table'] : 'portal_post';
+        $data['object_id']  = $this->request->has('object_id') ? $input['object_id'] : $this->error('object_id参数不存在');
+        $data['table_name'] = $this->request->has('table_name') ? $input['table_name'] : $this->error('table_name参数不存在');
         $data['url']        = $this->request->has('url') ? $input['url'] : $this->error('url参数不存在');
-        $data['content']    = $this->request->has('content') ? $input['content'] : $this->error('评论参数不存在');
-        $data['parent_id']  = $this->request->has('pid') ? $input['pid'] : 0;
+        $data['content']    = $this->request->has('content') ? $input['content'] : $this->error('内容不为空');
+        $data['parent_id']  = $this->request->has('parent_id') ? $input['parent_id'] : 0;
         $result             = $this->validate($data,
             [
                 'object_id' => 'require|number',
-                'content'   => 'require|chs',
-                'url'       => 'url',
+                'content'   => 'require',
             ]);
         if (true !== $result) {
             // 验证失败 输出错误信息
             $this->error($result);
         }
         $data['delete_time'] = 0;
-        $data['create_time'] = THINK_START_TIME;
+        $data['create_time'] = time();
         if ($data['parent_id']) {
             $res = Comment::field('parent_id', 'path', 'user_id')->find($data['parent_id']);
             if ($res) {

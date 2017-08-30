@@ -13,8 +13,8 @@
 use think\Route;
 
 Route::get([
-    'user/favorites'    => 'user/favorites/getFavorites', //获取收藏列表
-    'user/userComments' => 'user/comments/getUserComments', //获取我的评论列表
+    'user/favorites/my' => 'user/favorites/getFavorites', //获取收藏列表
+    'user/comments/my'  => 'user/comments/getUserComments', //获取我的评论列表
     'user/comments'     => 'user/comments/getComments', //获评论列表
 ]);
 
@@ -22,10 +22,6 @@ Route::post([
     'user/articles/deletes' => 'user/Articles/deletes',
     'user/favorites'        => 'user/favorites/setFavorites', //添加收藏
     'user/comments'         => 'user/comments/setComments', //添加评论
-]);
-
-Route::put([
-
 ]);
 
 Route::delete([

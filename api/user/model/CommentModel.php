@@ -18,6 +18,9 @@ use api\common\model\CommonModel;
 class CommentModel extends CommonModel
 {
 
+    //模型关联方法
+    protected $relationFilter = ['user', 'to_user'];
+
     /**
      * 基础查询
      */
@@ -90,26 +93,6 @@ class CommentModel extends CommonModel
         }
         $data = $this->with('to_user')->field(true)->where($map)->order($order)->limit($limit)->select();
         return $data;
-    }
-
-    public function page($map, $num = 30, $current = 1)
-    {
-        if (empty($map)) {
-            return [];
-        }
-        $count     = $this->field(true)->where($map)->count(); //总数
-        $countPage = ceil($count / $num); //总页数
-
-        if ($countPage <= 1) {
-            $data['limit']   = '0,' . $num;
-            $data['current'] = 1;
-            return $data;
-        }
-        $nextPage        = ($current - 1) * $num; //下一页
-        $data['limit']   = $nextPage . ',' . $num;
-        $data['current'] = $current;
-        return $data;
-
     }
 
     /**
