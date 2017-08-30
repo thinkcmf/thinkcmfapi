@@ -8,11 +8,11 @@
 // +----------------------------------------------------------------------
 namespace api\admin\controller;
 
+use cmf\controller\RestBaseController;
 use think\Db;
 use think\Validate;
-use cmf\controller\RestAdminBaseController;
 
-class PublicController extends RestAdminBaseController
+class PublicController extends RestBaseController
 {
 
     // 用户登录 TODO 增加最后登录信息记录,如 ip
@@ -102,6 +102,15 @@ class PublicController extends RestAdminBaseController
     // 管理员退出
     public function logout()
     {
+        $userId = $this->getUserId();
+        Db::name('user_token')->where([
+            'token'       => $this->token,
+            'user_id'     => $userId,
+            'device_type' => $this->deviceType
+        ])->update(['token' => '']);
+
+        $this->success("退出成功!");
+
         $this->success("退出成功!");
     }
 

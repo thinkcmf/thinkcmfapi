@@ -162,6 +162,13 @@ class PublicController extends RestBaseController
     // 用户退出
     public function logout()
     {
+        $userId = $this->getUserId();
+        Db::name('user_token')->where([
+            'token'       => $this->token,
+            'user_id'     => $userId,
+            'device_type' => $this->deviceType
+        ])->update(['token' => '']);
+
         $this->success("退出成功!");
     }
 
