@@ -40,10 +40,10 @@ class PublicController extends RestBaseController
 
         if (Validate::is($data['username'], 'email')) {
             $user['user_email'] = $data['username'];
-            //$userQuery          = $userQuery->where('user_email', $data['username']);
+            $userQuery          = $userQuery->where('user_email', $data['username']);
         } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
             $user['mobile'] = $data['username'];
-            //$userQuery      = $userQuery->where('mobile', $data['username']);
+            $userQuery      = $userQuery->where('mobile', $data['username']);
         } else {
             $this->error("请输入正确的手机或者邮箱格式!");
         }
