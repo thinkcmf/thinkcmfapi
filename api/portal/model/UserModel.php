@@ -24,7 +24,7 @@ class UserModel extends CommonModel
      */
     protected function base($query)
     {
-        $query->where('cmf_user.user_status', 1);
+        $query->alias('user')->where('user.user_status', 1);
     }
 
     /**
