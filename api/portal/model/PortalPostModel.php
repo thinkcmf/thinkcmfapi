@@ -419,10 +419,10 @@ class PortalPostModel extends CommonModel
     {
         $postUserId = $this->useGlobalScope(false)
             ->getFieldById($id, 'user_id');
-        if ($postUserId != $userId || $userId != 1) {
-            return false;
-        } else {
+        if ($postUserId == $userId || $userId == 1) {
             return true;
+        } else {
+            return false;
         }
     }
 
