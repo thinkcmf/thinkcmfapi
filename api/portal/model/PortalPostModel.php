@@ -150,7 +150,7 @@ class PortalPostModel extends CommonModel
 
         if (!empty($more['files'])) {
             foreach ($more['files'] as $key => $value) {
-                $more['files'][$key]['url'] = cmf_get_image_url($value['url']);
+                $more['files'][$key]['url'] = cmf_get_file_download_url($value['url']);
             }
         }
         return $more;
