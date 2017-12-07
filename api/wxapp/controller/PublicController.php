@@ -39,10 +39,27 @@ class PublicController extends RestBaseController
             $this->error($validate->getError());
         }
 
-        //TODO 真实逻辑实现
-        $code      = $data['code'];
-        $appId     = '你的 appid';
-        $appSecret = '你的 secket';
+        $code          = $data['code'];
+        $wxappSettings = cmf_get_option('wxapp_settings');
+
+        $appId = $this->request->header('XX-Wxapp-AppId');
+        if (empty($appId)) {
+            if (empty($wxappSettings['default'])) {
+                $this->error('没有设置默认小程序！');
+            } else {
+                $defaultWxapp = $wxappSettings['default'];
+                $appId        = $defaultWxapp['app_id'];
+                $appSecret    = $defaultWxapp['app_secret'];
+            }
+        } else {
+            if (empty($wxappSettings['wxapps'][$appId])) {
+                $this->error('小程序设置不存在！');
+            } else {
+                $appId     = $wxappSettings['wxapps'][$appId]['app_id'];
+                $appSecret = $wxappSettings['wxapps'][$appId]['app_secret'];
+            }
+        }
+
 
         $response = cmf_curl_get("https://api.weixin.qq.com/sns/jscode2session?appid=$appId&secret=$appSecret&js_code=$code&grant_type=authorization_code");
 
