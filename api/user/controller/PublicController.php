@@ -156,7 +156,7 @@ class PublicController extends RestBaseController
             $this->error("登录失败!");
         }
 
-        $this->success("登录成功!", ['token' => $token]);
+        $this->success("登录成功!", ['token' => $token, 'user' => $findUser]);
     }
 
     // 用户退出
