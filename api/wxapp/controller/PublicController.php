@@ -90,7 +90,8 @@ class PublicController extends RestBaseController
         unset($wxUserData['watermark']);
 
         if ($findThirdPartyUser) {
-            $token = cmf_generate_user_token($findThirdPartyUser['user_id'], 'wxapp');
+            $userId = $findThirdPartyUser['user_id'];
+            $token  = cmf_generate_user_token($findThirdPartyUser['user_id'], 'wxapp');
 
             $userData = [
                 'last_login_ip'   => $ip,
@@ -140,7 +141,9 @@ class PublicController extends RestBaseController
 
         }
 
-        $this->success("登录成功!", ['token' => $token]);
+        $user = Db::name('user')->where('id', $userId)->find();
+
+        $this->success("登录成功!", ['token' => $token, 'user' => $user]);
 
 
     }
