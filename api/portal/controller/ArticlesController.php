@@ -11,7 +11,6 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
-use api\portal\model\PortalTagPostModel;
 
 class ArticlesController extends RestBaseController
 {
@@ -56,6 +55,7 @@ class ArticlesController extends RestBaseController
             if (empty($data)) {
                 $this->error('文章不存在！');
             } else {
+                $this->postModel->where('id', $id)->setInc('post_hits');
                 $this->success('请求成功!', $data);
             }
 
