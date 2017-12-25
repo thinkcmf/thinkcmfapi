@@ -13,17 +13,11 @@ use api\common\model\CommonModel;
 
 class UserFavoriteModel extends CommonModel
 {
-    /**
-     * [base 基础查询条件]
-     */
-    protected function base($query)
-    {
-        $query->field('id,title,url,description,create_time');
-    }
 
     /**
      * 关联表
-     * @param  [string] $table_name [关联表名]
+     * @param  string $table_name [关联表名]
+     * @return \think\model\relation\HasOne
      */
     protected function unionTable($table_name)
     {
@@ -37,7 +31,7 @@ class UserFavoriteModel extends CommonModel
      */
     public function getUrlAttr($value)
     {
-        $url = json_decode($value,true);
+        $url = json_decode($value, true);
         if (!empty($url)) {
             $url = url($url['action'], $url['param'], true, true);
         } else {
@@ -48,8 +42,8 @@ class UserFavoriteModel extends CommonModel
 
     /**
      * 获取收藏内容
-     * @param  [array] $data [select,find查询结果]
-     * @return [array]       [收藏对应表的内容]
+     * @param  array $data [select,find查询结果]
+     * @return array|false|\PDOStatement|string|\think\Model
      */
     public function getFavorite($data)
     {
