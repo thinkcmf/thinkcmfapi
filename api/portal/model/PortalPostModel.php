@@ -110,6 +110,16 @@ class PortalPostModel extends CommonModel
         return strtotime($value);
     }
 
+    public function getPostTitleAttr($value)
+    {
+        return htmlspecialchars_decode($value);
+    }
+
+    public function getPostExcerptAttr($value)
+    {
+        return htmlspecialchars_decode($value);
+    }
+
     /**
      * post_content 自动转化
      * @param $value
