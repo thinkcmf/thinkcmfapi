@@ -81,8 +81,6 @@ class FavoritesController extends RestUserBaseController
             return false;
         } else if (empty($url)) {
             return false;
-        } elseif (empty($description)) {
-            return false;
         } elseif (empty($table_name)) {
             return false;
         } elseif (empty($object_id)) {
