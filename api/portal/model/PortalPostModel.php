@@ -94,7 +94,13 @@ class PortalPostModel extends CommonModel
      */
     public function getPublishedTimeAttr($value)
     {
-        return date('Y-m-d H:i:s', $value);
+        // 兼容老版本 1.0.0的客户端
+        $apiVersion = request()->header('XX-Api-Version');
+        if (empty($apiVersion)) {
+            return date('Y-m-d H:i:s', $value);
+        } else {
+            return $value;
+        }
     }
 
     /**
