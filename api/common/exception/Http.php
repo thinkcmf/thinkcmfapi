@@ -1,4 +1,3 @@
-
 <?php
 namespace api\common\exception;
 
