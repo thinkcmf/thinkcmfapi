@@ -14,6 +14,7 @@
 namespace api\user\model;
 
 use api\common\model\CommonModel;
+use think\Db;
 
 class CommentModel extends CommonModel
 {
@@ -112,6 +113,17 @@ class CommentModel extends CommonModel
         }
 
         if ($obj = self::create($data)) {
+            $objectId = intval($data['object_id']);
+            try {
+                $pk = Db::name($data['table_name'])->getPk();
+
+                Db::name($data['table_name'])->where([$pk => $objectId])->setInc('comment_count');
+
+                Db::name($data['table_name'])->where([$pk => $objectId])->update(['last_comment' => time()]);
+
+            } catch (\Exception $e) {
+
+            }
             return $obj->id;
         } else {
             return false;
