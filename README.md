@@ -60,6 +60,9 @@ http://www.kancloud.cn/thinkcmf/cmf5api
 
 QQ群:100828313 (付费)
 
+### ThinkCMF小程序 ThinkCMFlite发布
+https://www.kancloud.cn/thinkcmf/cmf5api/451391
+
 
 
 
