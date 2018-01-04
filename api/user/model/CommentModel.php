@@ -47,6 +47,10 @@ class CommentModel extends CommonModel
      */
     public function getMoreAttr($value)
     {
+        if (empty($value)) {
+            return null;
+        }
+
         $more = json_decode($value, true);
         if (!empty($more['thumbnail'])) {
             $more['thumbnail'] = cmf_get_image_url($more['thumbnail']);
