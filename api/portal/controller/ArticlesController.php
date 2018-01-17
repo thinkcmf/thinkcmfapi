@@ -170,4 +170,22 @@ class ArticlesController extends RestBaseController
         }
 
     }
+
+    public function doLike()
+    {
+        $userId = $this->getUserId();
+
+        $articleId = $this->request->param('id', 0, 'intval');
+
+        $canLike = cmf_check_user_action(['object' => "posts$articleId", 'user_id' => $userId], 1);
+
+        if ($canLike) {
+            $this->postModel->where(['id' => $articleId])->setInc('post_like');
+
+            $likeCount = $this->postModel->where('id', $articleId)->value('post_like');
+            $this->success("赞好啦！", ['post_like' => $likeCount]);
+        } else {
+            $this->error("您已赞过啦！");
+        }
+    }
 }
