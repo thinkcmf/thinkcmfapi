@@ -134,7 +134,7 @@ class CommentsController extends RestUserBaseController
         $data['delete_time'] = 0;
         $data['create_time'] = time();
         if ($data['parent_id']) {
-            $res = Comment::field('parent_id', 'path', 'user_id')->find($data['parent_id']);
+            $res = Comment::field(['parent_id', 'path', 'user_id'])->find($data['parent_id']);
             if ($res) {
                 $data['path']       = $res['path'] . $data['parent_id'] . ',';
                 $data['to_user_id'] = $res['user_id'];
