@@ -16,5 +16,13 @@ use think\Model;
 
 class UserModel extends Model
 {
-    //
+    /**
+     * avatar 自动转化
+     * @param $value
+     * @return string
+     */
+    public function getAvatarAttr($value)
+    {
+        return cmf_get_user_avatar_url($value);
+    }
 }
