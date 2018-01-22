@@ -27,8 +27,15 @@ class FavoritesController extends RestUserBaseController
      */
     public function getFavorites()
     {
-        $userId       = $this->getUserId();
-        $favoriteData = $this->userFavoriteModel->where('user_id', $userId)->order('create_time', 'DESC')->select();
+        $userId = $this->getUserId();
+
+        $param          = $this->request->param();
+        $param['where'] = [
+            'user_id' => $userId
+        ];
+        $param['order'] = '-create_time';
+
+        $favoriteData = $this->userFavoriteModel->getDatas($param);
         $this->success('请求成功', $favoriteData);
     }
 
@@ -41,12 +48,13 @@ class FavoritesController extends RestUserBaseController
     public function setFavorites()
     {
         $input = $this->request->param();
+
         //组装数据
-        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table'], $input['oid']);
+        $data = $this->_FavoritesObject($input['title'], $input['url'], $input['description'], $input['table_name'], $input['object_id']);
         if (!$data) {
             $this->error('收藏失败');
         }
-        if ($this->userFavoriteModel->where('object_id', $input['oid'])->where('table_name', $input['table'])->count() > 0) {
+        if ($this->userFavoriteModel->where(['user_id' => $this->getUserId(), 'object_id' => $input['object_id']])->where('table_name', $input['table_name'])->count() > 0) {
             $this->error('已收藏');
         }
         if ($this->userFavoriteModel->setFavorite($data)) {
@@ -73,15 +81,13 @@ class FavoritesController extends RestUserBaseController
             return false;
         } else if (empty($url)) {
             return false;
-        } elseif (empty($description)) {
-            return false;
         } elseif (empty($table_name)) {
             return false;
         } elseif (empty($object_id)) {
             return false;
         }
         $data['title']       = $title;
-        $data['url']         = $url;
+        $data['url']         = htmlspecialchars_decode($url);
         $data['description'] = $description;
         $data['table_name']  = $table_name;
         $data['object_id']   = $object_id;
@@ -97,12 +103,18 @@ class FavoritesController extends RestUserBaseController
      */
     public function unsetFavorites()
     {
-        $input = $this->request->param();
-        if ($this->userFavoriteModel->unsetFavorite($input['id'])) {
-            $this->success('取消成功');
-        } else {
-            $this->error('取消失败');
+        $id     = $this->request->param('id', 0, 'intval');
+        $userId = $this->getUserId();
+
+        $count = $this->userFavoriteModel->where(['id' => $id, 'user_id' => $userId])->count();
+
+        if ($count == 0) {
+            $this->error('收藏不存在,无法取消');
         }
+
+        $this->userFavoriteModel->where(['id' => $id])->delete();
+
+        $this->success('取消成功');
 
     }
 }

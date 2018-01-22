@@ -33,8 +33,8 @@ class PortalCategoryModel extends CommonModel
      */
     protected function base($query)
     {
-        $query->where('delete_time', 0)
-            ->where('cmf_portal_category.status', 1);
+        $query->alias('portal_category')->where('delete_time', 0)
+            ->where('portal_category.status', 1);
     }
 
     /**
@@ -87,7 +87,7 @@ class PortalCategoryModel extends CommonModel
      */
     public static function categoryPostIds($category_id)
     {
-        $ids      = '';
+        $ids      = [];
         $post_ids = self::relation('PostIds')->field(true)->where('id', $category_id)->find();
         foreach ($post_ids['PostIds'] as $key => $id) {
             $ids[] = $id['post_id'];

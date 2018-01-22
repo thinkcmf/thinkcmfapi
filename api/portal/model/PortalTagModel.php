@@ -24,7 +24,7 @@ class PortalTagModel extends CommonModel
      */
     protected function base($query)
     {
-        $query->where('cmf_portal_tag.status', 1);
+        $query->alias('post_tag')->where('post_tag.status', 1);
     }
     /**
      * 关联 文章表

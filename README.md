@@ -1,4 +1,4 @@
-ThinkCMF 5.0 API 开发者预览版
+ThinkCMF 5.0 API 1.0.0
 ===============
 ### 环境推荐
 > php5.5+
@@ -59,6 +59,9 @@ thinkcmf  根目录
 http://www.kancloud.cn/thinkcmf/cmf5api
 
 QQ群:100828313 (付费)
+
+### ThinkCMF小程序 ThinkCMFlite发布
+https://www.kancloud.cn/thinkcmf/cmf5api/451391
 
 
 

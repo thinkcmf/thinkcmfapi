@@ -8,11 +8,11 @@
 // +----------------------------------------------------------------------
 namespace api\admin\controller;
 
+use cmf\controller\RestBaseController;
 use think\Db;
 use think\Validate;
-use cmf\controller\RestAdminBaseController;
 
-class PublicController extends RestAdminBaseController
+class PublicController extends RestBaseController
 {
 
     // 用户登录 TODO 增加最后登录信息记录,如 ip
@@ -35,7 +35,7 @@ class PublicController extends RestAdminBaseController
         $userQuery = Db::name("user");
         if (Validate::is($data['username'], 'email')) {
             $userQuery = $userQuery->where('user_email', $data['username']);
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['username'])) {
+        } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
             $userQuery = $userQuery->where('mobile', $data['username']);
         } else {
             $userQuery = $userQuery->where('user_login', $data['username']);
@@ -99,9 +99,18 @@ class PublicController extends RestAdminBaseController
         $this->success("登录成功!", ['token' => $token]);
     }
 
-    // 用户退出
+    // 管理员退出
     public function logout()
     {
+        $userId = $this->getUserId();
+        Db::name('user_token')->where([
+            'token'       => $this->token,
+            'user_id'     => $userId,
+            'device_type' => $this->deviceType
+        ])->update(['token' => '']);
+
+        $this->success("退出成功!");
+
         $this->success("退出成功!");
     }
 

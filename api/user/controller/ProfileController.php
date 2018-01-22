@@ -52,13 +52,14 @@ class ProfileController extends RestUserBaseController
     public function bindingEmail()
     {
         $validate = new Validate([
-            'email'             => 'require|email',
+            'email'             => 'require|email|unique:user,user_email',
             'verification_code' => 'require'
         ]);
 
         $validate->message([
             'email.require'             => '请输入您的邮箱!',
             'email.email'               => '请输入正确的邮箱格式!',
+            'email.unique'              => '正确账号已存在!',
             'verification_code.require' => '请输入数字验证码!'
         ]);
 
@@ -88,12 +89,13 @@ class ProfileController extends RestUserBaseController
     public function bindingMobile()
     {
         $validate = new Validate([
-            'mobile'            => 'require',
+            'mobile'            => 'require|unique:user,mobile',
             'verification_code' => 'require'
         ]);
 
         $validate->message([
-            'email.require'             => '请输入您的邮箱!',
+            'mobile.require'            => '请输入您的手机号!',
+            'mobile.unique'             => '手机号已经存在！',
             'verification_code.require' => '请输入数字验证码!'
         ]);
 
@@ -102,9 +104,10 @@ class ProfileController extends RestUserBaseController
             $this->error($validate->getError());
         }
 
-        if (!preg_match('/(^(13\d|15[^4\D]|17[13678]|18\d)\d{8}|170[^346\D]\d{7})$/', $data['mobile'])) {
+        if (!preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['mobile'])) {
             $this->error("请输入正确的手机格式!");
         }
+
 
         $userId = $this->getUserId();
         $mobile = Db::name("user")->where('id', $userId)->value('mobile');
@@ -162,6 +165,11 @@ class ProfileController extends RestUserBaseController
             if (empty($data)) {
                 $this->error('修改失败，提交表单为空！');
             }
+
+            if (!empty($data['birthday'])) {
+                $data['birthday'] = strtotime($data['birthday']);
+            }
+
             $upData = Db::name("user")->where('id', $userId)->field($fieldStr)->update($data);
             if ($upData !== false) {
                 $this->success('修改成功！');

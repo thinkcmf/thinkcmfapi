@@ -17,7 +17,10 @@ class IndexController extends RestBaseController
     // api 首页
     public function index()
     {
-        $this->success("恭喜您,API访问成功!", ['doc' => 'http://www.kancloud.cn/thinkcmf/cmf5api']);
+        $this->success("恭喜您,API访问成功!", [
+            'version' => '1.0.0',
+            'doc'     => 'http://www.kancloud.cn/thinkcmf/cmf5api'
+        ]);
     }
 
 }

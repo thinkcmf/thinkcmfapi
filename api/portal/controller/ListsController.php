@@ -8,8 +8,8 @@
 // +----------------------------------------------------------------------
 namespace api\portal\controller;
 
-use api\portal\model\PortalCategoryModel as PortalCategory;
-use api\portal\service\PortalPostModel as PortalPost;
+use api\portal\model\PortalCategoryModel;
+use api\portal\model\PortalPostModel;
 use cmf\controller\RestBaseController;
 
 class ListsController extends RestBaseController
@@ -23,11 +23,14 @@ class ListsController extends RestBaseController
      */
     public function recommended()
     {
-        $num           = $this->request->has('num') ? $this->request->param('num') : 10;
-        $next_id       = $this->request->has('next_id') ? $this->request->param('next_id') : 0;
-        $list['list']  = PortalPost::recommendedList($next_id, $num);
-        $list['limit'] = [$next_id, $num];
-        $this->success('ok', $list);
+        $param           = $this->request->param();
+        $portalPostModel = new PortalPostModel();
+
+        $param['where'] = ['recommended' => 1];
+
+        $articles = $portalPostModel->getDatas($param);
+
+        $this->success('ok', ['list' => $articles]);
     }
 
     /**
@@ -38,16 +41,30 @@ class ListsController extends RestBaseController
      */
     public function getCategoryPostLists()
     {
-        $num         = $this->request->has('num') ? $this->request->param('num') : 10;
-        $next_id     = $this->request->has('next_id') ? $this->request->param('next_id') : 0;
-        $category_id = $this->request->has('category_id') ? $this->request->param('category_id') : 1;
+        $categoryId = $this->request->param('category_id', 0, 'intval');
+
+
+        $portalCategoryModel = new  PortalCategoryModel();
+
+        $findCategory = $portalCategoryModel->where('id', $categoryId)->find();
+
         //分类是否存在
-        if (!PortalCategory::where('id', $category_id)->find()) {
-            $this->error('fail');
+        if (empty($findCategory)) {
+            $this->error('分类不存在！');
         }
-        $list['datas'] = PortalPost::categoryPostList($category_id, $next_id, $num);
-        $list['limit'] = [$next_id, $num];
-        $this->success('ok', $list);
+
+        $param = $this->request->param();
+
+        $articles = $portalCategoryModel->paramsFilter($param, $findCategory->articles()->alias('post'))->select();
+
+        if (!empty($param['relation'])) {
+            if (count($articles) > 0) {
+                $articles->load('user');
+                $articles->append(['user']);
+            }
+        }
+
+        $this->success('ok', ['list' => $articles]);
     }
 
 }

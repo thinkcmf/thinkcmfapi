@@ -38,7 +38,7 @@ class UserController extends RestBaseController
         if (count($articles) == 0) {
             $this->error('没有数据');
         } else {
-            $this->success('ok', ['articles' => $articles]);
+            $this->success('ok', ['list' => $articles]);
         }
 
     }

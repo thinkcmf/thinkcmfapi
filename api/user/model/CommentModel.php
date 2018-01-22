@@ -13,10 +13,14 @@
 
 namespace api\user\model;
 
-use think\Model;
+use api\common\model\CommonModel;
+use think\Db;
 
-class CommentModel extends Model
+class CommentModel extends CommonModel
 {
+
+    //模型关联方法
+    protected $relationFilter = ['user', 'to_user'];
 
     /**
      * 基础查询
@@ -44,6 +48,10 @@ class CommentModel extends Model
      */
     public function getMoreAttr($value)
     {
+        if (empty($value)) {
+            return null;
+        }
+
         $more = json_decode($value, true);
         if (!empty($more['thumbnail'])) {
             $more['thumbnail'] = cmf_get_image_url($more['thumbnail']);
@@ -92,26 +100,6 @@ class CommentModel extends Model
         return $data;
     }
 
-    public function page($map, $num = 30, $current = 1)
-    {
-        if (empty($map)) {
-            return [];
-        }
-        $count     = $this->field(true)->where($map)->count(); //总数
-        $countPage = ceil($count / $num); //总页数
-
-        if ($countPage <= 1) {
-            $data['limit']   = '0,' . $num;
-            $data['current'] = 1;
-            return $data;
-        }
-        $nextPage        = ($current - 1) * $num; //下一页
-        $data['limit']   = $nextPage . ',' . $num;
-        $data['current'] = $current;
-        return $data;
-
-    }
-
     /**
      * [setComment 添加评论]
      * @Author:   wuwu<15093565100@163.com>
@@ -125,6 +113,17 @@ class CommentModel extends Model
         }
 
         if ($obj = self::create($data)) {
+            $objectId = intval($data['object_id']);
+            try {
+                $pk = Db::name($data['table_name'])->getPk();
+
+                Db::name($data['table_name'])->where([$pk => $objectId])->setInc('comment_count');
+
+                Db::name($data['table_name'])->where([$pk => $objectId])->update(['last_comment' => time()]);
+
+            } catch (\Exception $e) {
+
+            }
             return $obj->id;
         } else {
             return false;
