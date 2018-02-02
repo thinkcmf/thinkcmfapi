@@ -36,14 +36,14 @@ class PublicController extends RestBaseController
 
         $user = [];
 
-        $userQuery = Db::name("user");
+        $findUserWhere = [];
 
         if (Validate::is($data['username'], 'email')) {
-            $user['user_email'] = $data['username'];
-            $userQuery          = $userQuery->where('user_email', $data['username']);
+            $user['user_email']          = $data['username'];
+            $findUserWhere['user_email'] = $data['username'];
         } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
-            $user['mobile'] = $data['username'];
-            $userQuery      = $userQuery->where('mobile', $data['username']);
+            $user['mobile']          = $data['username'];
+            $findUserWhere['mobile'] = $data['username'];
         } else {
             $this->error("请输入正确的手机或者邮箱格式!");
         }
@@ -53,7 +53,7 @@ class PublicController extends RestBaseController
             $this->error($errMsg);
         }
 
-        $findUserCount = $userQuery->count();
+        $findUserCount = Db::name("user")->where($findUserWhere)->count();
 
         if ($findUserCount > 0) {
             $this->error("此账号已存在!");
@@ -64,7 +64,7 @@ class PublicController extends RestBaseController
         $user['user_type']   = 2;
         $user['user_pass']   = cmf_password($data['password']);
 
-        $result = $userQuery->insert($user);
+        $result = Db::name("user")->insert($user);
 
 
         if (empty($result)) {
@@ -92,16 +92,17 @@ class PublicController extends RestBaseController
             $this->error($validate->getError());
         }
 
-        $userQuery = Db::name("user");
+        $findUserWhere = [];
+
         if (Validate::is($data['username'], 'email')) {
-            $userQuery = $userQuery->where('user_email', $data['username']);
+            $findUserWhere['user_email'] = $data['username'];
         } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
-            $userQuery = $userQuery->where('mobile', $data['username']);
+            $findUserWhere['mobile'] = $data['username'];
         } else {
-            $userQuery = $userQuery->where('user_login', $data['username']);
+            $findUserWhere['user_login'] = $data['username'];
         }
 
-        $findUser = $userQuery->find();
+        $findUser = Db::name("user")->where($findUserWhere)->find();
 
         if (empty($findUser)) {
             $this->error("用户不存在!");
