@@ -179,7 +179,7 @@ class PortalPostModel extends PortalPost
 	{
 		$allowField = [
 			'post_title','post_keywords','post_source',
-			'post_excerpt','post_content','thumbnail','more',
+			'post_excerpt','post_content','more',
 			'published_time'
 		];
 		if (!empty($data['more'])) {
