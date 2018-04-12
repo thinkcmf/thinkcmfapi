@@ -110,8 +110,6 @@ class PublicController extends RestBaseController
         ])->update(['token' => '']);
 
         $this->success("退出成功!");
-
-        $this->success("退出成功!");
     }
 
 }
