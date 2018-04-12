@@ -43,4 +43,20 @@ class CategoriesController extends RestBaseController
         $data         = $this->categoryModel->getDatas($params);
         $this->success('请求成功!', $data);
     }
+
+    /**
+     * 获取指定分类的子分类列表
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function subCategories()
+    {
+        $id = $this->request->get('category_id', 0, 'intval');
+
+        $categories = $this->categoryModel->where(['parent_id' => $id])->select();
+
+        $this->success('请求成功', ['categories' => $categories]);
+
+    }
 }
