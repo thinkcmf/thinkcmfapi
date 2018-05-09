@@ -96,7 +96,7 @@ class PublicController extends RestBaseController
             $userData = [
                 'last_login_ip'   => $ip,
                 'last_login_time' => $currentTime,
-                'login_times'     => ['exp', 'login_times+1'],
+                'login_times'     => Db::raw('login_times+1'),
                 'more'            => json_encode($wxUserData)
             ];
 
