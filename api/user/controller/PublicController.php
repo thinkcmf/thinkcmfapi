@@ -120,7 +120,7 @@ class PublicController extends RestBaseController
             }
         }
 
-        $allowedDeviceTypes = ['mobile', 'android', 'iphone', 'ipad', 'web', 'pc', 'mac'];
+        $allowedDeviceTypes = $this->allowedDeviceTypes;
 
         if (empty($data['device_type']) || !in_array($data['device_type'], $allowedDeviceTypes)) {
             $this->error("请求错误,未知设备!");
