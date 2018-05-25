@@ -48,7 +48,7 @@ class SlideModel extends Model
      */
     public function SlideList($map)
     {
-        $data = $this->relation('items')->field(true)->where($map)->select();
+        $data = $this->relation('items')->field(true)->where($map)->find();
         return $data;
     }
 
