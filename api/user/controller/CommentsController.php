@@ -14,9 +14,9 @@ namespace api\user\controller;
 
 use api\user\model\CommentModel as Comment;
 use api\user\model\UserModel as User;
-use cmf\controller\RestUserBaseController;
+use cmf\controller\RestBaseController;
 
-class CommentsController extends RestUserBaseController
+class CommentsController extends RestBaseController
 {
 
     /**
