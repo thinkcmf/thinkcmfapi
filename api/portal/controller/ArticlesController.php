@@ -75,7 +75,14 @@ class ArticlesController extends RestBaseController
         $params = $this->request->get();
         $userId = $this->getUserId();
         $data   = $this->postModel->getUserArticles($userId, $params);
-        $this->success('请求成功!', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data];
+        } else {
+            $response = [$data];
+        }
+
+        $this->success('请求成功!', $response);
     }
 
     /**
