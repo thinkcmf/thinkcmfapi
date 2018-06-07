@@ -57,7 +57,7 @@ class ArticlesController extends RestBaseController
                 $this->error('文章不存在！');
             } else {
                 $this->postModel->where('id', $id)->setInc('post_hits');
-                $url = cmf_url('portal/Article/index', ['id' => $id, 'cid' => $data['categories'][0]['id']],true,true);
+                $url = cmf_url('portal/Article/index', ['id' => $id, 'cid' => $data['categories'][0]['id']], true, true);
 
                 $data        = $data->toArray();
                 $data['url'] = $url;
@@ -176,7 +176,14 @@ class ArticlesController extends RestBaseController
                 'post_title|post_keywords|post_excerpt' => ['like', '%' . $params['keyword'] . '%']
             ];
             $data            = $this->postModel->getDatas($params);
-            $this->success('请求成功!', $data);
+
+            if (isset($this->apiVersion)) {
+                $response = ['list' => $data,];
+            } else {
+                $response = $data;
+            }
+
+            $this->success('请求成功!', $response);
         } else {
             $this->error('搜索关键词不能为空！');
         }
