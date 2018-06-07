@@ -206,7 +206,7 @@ class ArticlesController extends RestBaseController
         ])->where('table_name', 'portal_post')->count();
 
         if (empty($findLikeCount)) {
-            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt,more')->find();
+            $article = $this->postModel->where(['id' => $articleId])->field('id,post_title,post_excerpt,more')->find();
             if (empty($article)) {
                 $this->error('文章不存在！');
             }
@@ -295,7 +295,7 @@ class ArticlesController extends RestBaseController
         ])->where('table_name', 'portal_post')->count();
 
         if (empty($findFavoriteCount)) {
-            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt,more')->find();
+            $article = $this->postModel->where(['id' => $articleId])->field('id,post_title,post_excerpt,more')->find();
             if (empty($article)) {
                 $this->error('文章不存在！');
             }
