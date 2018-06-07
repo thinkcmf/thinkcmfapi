@@ -39,7 +39,14 @@ class CommentsController extends RestBaseController
         }
         //处理不同的情况
         $data = $comment->getDatas($map);
-        $this->success('请求成功', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data];
+        } else {
+            $response = [$data];
+        }
+
+        $this->success('请求成功', $response);
 
     }
 
@@ -67,11 +74,18 @@ class CommentsController extends RestBaseController
         }
 
         $data = $comment->getDatas($map);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data];
+        } else {
+            $response = [$data];
+        }
+
         //数据是否存在
         if ($data->isEmpty()) {
             $this->error('评论数据为空');
         } else {
-            $this->success('评论获取成功!', $data);
+            $this->success('评论获取成功!', $response);
         }
     }
 
