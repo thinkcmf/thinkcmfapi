@@ -241,6 +241,7 @@ class ArticlesController extends RestBaseController
                     'table_name'  => 'portal_post',
                     'title'       => $article['post_title'],
                     'description' => $article['post_excerpt'],
+                    'url'         => json_encode(['action' => 'portal/Article/index', 'param' => ['id' => $articleId, 'cid' => $article['categories'][0]['id']]]),
                     'create_time' => time()
                 ]);
                 Db::commit();
