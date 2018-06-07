@@ -11,6 +11,7 @@ namespace api\portal\controller;
 
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
+use think\Db;
 
 class ArticlesController extends RestBaseController
 {
@@ -187,5 +188,23 @@ class ArticlesController extends RestBaseController
         } else {
             $this->error("您已赞过啦！");
         }
+    }
+
+    /**
+     * 相关文章列表
+     */
+    public function relatedArticles()
+    {
+        $articleId  = $this->request->param('id', 0, 'intval');
+        $categoryId = Db::name('portal_category_post')->where('post_id', $articleId)->value('category_id');
+
+
+        $articles = $this->postModel->alias('post')->join('__PORTAL_CATEGORY_POST__ category_post', 'post.id=category_post.post_id')
+            ->where(['post.delete_time' => 0, 'post.post_status' => 1, 'category_post.category_id' => $categoryId])
+            ->order(Db::raw('rand()'))
+            ->limit(5)
+            ->select();
+
+        $this->success('success', ['list' => $articles]);
     }
 }
