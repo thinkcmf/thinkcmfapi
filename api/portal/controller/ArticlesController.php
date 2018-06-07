@@ -9,6 +9,7 @@
 
 namespace api\portal\controller;
 
+use api\user\model\UserFavoriteModel;
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
 use think\Db;
@@ -207,6 +208,94 @@ class ArticlesController extends RestBaseController
             $this->error("您已赞过啦！");
         }
     }
+
+    /**
+     * 文章收藏
+     * @throws \think\Exception
+     */
+    public function doFavorite()
+    {
+        $userId = $this->getUserId();
+
+        $articleId = $this->request->param('id', 0, 'intval');
+
+        $userFavoriteModel = new UserFavoriteModel();
+
+        $findFavoriteCount = $userFavoriteModel->where([
+            'user_id'   => $userId,
+            'object_id' => $articleId
+        ])->where('table_name', 'portal_post')->count();
+
+        if (empty($findFavoriteCount)) {
+            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt')->find();
+            if (empty($article)) {
+                $this->error('文章不存在！');
+            }
+
+            Db::startTrans();
+            try {
+                $this->postModel->where(['id' => $articleId])->setInc('post_favorites');
+                $userFavoriteModel->insert([
+                    'user_id'     => $userId,
+                    'object_id'   => $articleId,
+                    'table_name'  => 'portal_post',
+                    'title'       => $article['post_title'],
+                    'description' => $article['post_excerpt'],
+                    'create_time' => time()
+                ]);
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollback();
+
+                $this->error('收藏失败！');
+            }
+
+            $favoriteCount = $this->postModel->where('id', $articleId)->value('post_favorites');
+            $this->success("收藏好啦！", ['post_favorites' => $favoriteCount]);
+        } else {
+            $this->error("您已收藏过啦！");
+        }
+    }
+
+    /**
+     * 文章收藏
+     * @throws \think\Exception
+     */
+    public function cancelFavorite()
+    {
+        $userId = $this->getUserId();
+
+        $articleId = $this->request->param('id', 0, 'intval');
+
+        $userFavoriteModel = new UserFavoriteModel();
+
+        $findFavoriteCount = $userFavoriteModel->where([
+            'user_id'   => $userId,
+            'object_id' => $articleId
+        ])->where('table_name', 'portal_post')->count();
+
+        if (!empty($findFavoriteCount)) {
+
+            Db::startTrans();
+            try {
+                $this->postModel->where(['id' => $articleId])->setDec('post_favorites');
+                $userFavoriteModel->where([
+                    'user_id'   => $userId,
+                    'object_id' => $articleId
+                ])->where('table_name', 'portal_post')->delete();
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollback();
+                $this->error('取消失败！');
+            }
+
+            $favoriteCount = $this->postModel->where('id', $articleId)->value('post_favorites');
+            $this->success("取消成功！", ['post_favorites' => $favoriteCount]);
+        } else {
+            $this->error("您还没赞过！");
+        }
+    }
+
 
     /**
      * 相关文章列表

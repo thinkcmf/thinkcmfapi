@@ -12,6 +12,8 @@ Route::get('portal/search', 'portal/Articles/search');
 Route::get('portal/articles/my', 'portal/Articles/my');
 Route::get('portal/articles/relatedArticles', 'portal/Articles/relatedArticles');
 Route::post('portal/articles/doLike', 'portal/Articles/doLike');
+Route::post('portal/articles/doFavorite', 'portal/Articles/doFavorite');
+Route::post('portal/articles/cancelFavorite', 'portal/Articles/cancelFavorite');
 Route::get('portal/tags/:id/articles', 'portal/Tags/articles');
 Route::get('portal/tags', 'portal/Tags/index');
 Route::get('portal/tags/hotTags', 'portal/Tags/hotTags');
