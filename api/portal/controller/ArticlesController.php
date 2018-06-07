@@ -10,6 +10,7 @@
 namespace api\portal\controller;
 
 use api\user\model\UserFavoriteModel;
+use api\user\model\UserLikeModel;
 use cmf\controller\RestBaseController;
 use api\portal\model\PortalPostModel;
 use think\Db;
@@ -197,15 +198,80 @@ class ArticlesController extends RestBaseController
 
         $articleId = $this->request->param('id', 0, 'intval');
 
-        $canLike = cmf_check_user_action(['object' => "posts$articleId", 'user_id' => $userId], 1);
+        $userLikeModel = new UserLikeModel();
 
-        if ($canLike) {
-            $this->postModel->where(['id' => $articleId])->setInc('post_like');
+        $findLikeCount = $userLikeModel->where([
+            'user_id'   => $userId,
+            'object_id' => $articleId
+        ])->where('table_name', 'portal_post')->count();
+
+        if (empty($findLikeCount)) {
+            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt')->find();
+            if (empty($article)) {
+                $this->error('文章不存在！');
+            }
+
+            Db::startTrans();
+            try {
+                $this->postModel->where(['id' => $articleId])->setInc('post_like');
+                $userLikeModel->insert([
+                    'user_id'     => $userId,
+                    'object_id'   => $articleId,
+                    'table_name'  => 'portal_post',
+                    'title'       => $article['post_title'],
+                    'description' => $article['post_excerpt'],
+                    'url'         => json_encode(['action' => 'portal/Article/index', 'param' => ['id' => $articleId, 'cid' => $article['categories'][0]['id']]]),
+                    'create_time' => time()
+                ]);
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollback();
+
+                $this->error('点赞失败！');
+            }
 
             $likeCount = $this->postModel->where('id', $articleId)->value('post_like');
             $this->success("赞好啦！", ['post_like' => $likeCount]);
         } else {
             $this->error("您已赞过啦！");
+        }
+    }
+
+    /**
+     * 取消文章点赞
+     */
+    public function cancelLike()
+    {
+        $userId = $this->getUserId();
+
+        $articleId = $this->request->param('id', 0, 'intval');
+
+        $userLikeModel = new UserLikeModel();
+
+        $findLikeCount = $userLikeModel->where([
+            'user_id'   => $userId,
+            'object_id' => $articleId
+        ])->where('table_name', 'portal_post')->count();
+
+        if (!empty($findLikeCount)) {
+
+            Db::startTrans();
+            try {
+                $this->postModel->where(['id' => $articleId])->setDec('post_like');
+                $userLikeModel->where([
+                    'user_id'   => $userId,
+                    'object_id' => $articleId
+                ])->where('table_name', 'portal_post')->delete();
+                Db::commit();
+            } catch (\Exception $e) {
+                Db::rollback();
+                $this->error('取消点赞失败！');
+            }
+
+            $likeCount = $this->postModel->where('id', $articleId)->value('post_like');
+            $this->success("取消点赞成功！", ['post_like' => $likeCount]);
+        } else {
+            $this->error("您还没赞过！");
         }
     }
 
@@ -259,8 +325,7 @@ class ArticlesController extends RestBaseController
     }
 
     /**
-     * 文章收藏
-     * @throws \think\Exception
+     * 取消文章收藏
      */
     public function cancelFavorite()
     {
@@ -293,7 +358,7 @@ class ArticlesController extends RestBaseController
             $favoriteCount = $this->postModel->where('id', $articleId)->value('post_favorites');
             $this->success("取消成功！", ['post_favorites' => $favoriteCount]);
         } else {
-            $this->error("您还没赞过！");
+            $this->error("您还没收藏过！");
         }
     }
 
