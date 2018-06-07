@@ -206,7 +206,7 @@ class ArticlesController extends RestBaseController
         ])->where('table_name', 'portal_post')->count();
 
         if (empty($findLikeCount)) {
-            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt')->find();
+            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt,more')->find();
             if (empty($article)) {
                 $this->error('文章不存在！');
             }
@@ -214,11 +214,13 @@ class ArticlesController extends RestBaseController
             Db::startTrans();
             try {
                 $this->postModel->where(['id' => $articleId])->setInc('post_like');
+                $thumbnail = empty($article['more']['thumbnail']) ? '' : $article['more']['thumbnail'];
                 $userLikeModel->insert([
                     'user_id'     => $userId,
                     'object_id'   => $articleId,
                     'table_name'  => 'portal_post',
                     'title'       => $article['post_title'],
+                    'thumbnail'   => $thumbnail,
                     'description' => $article['post_excerpt'],
                     'url'         => json_encode(['action' => 'portal/Article/index', 'param' => ['id' => $articleId, 'cid' => $article['categories'][0]['id']]]),
                     'create_time' => time()
@@ -293,7 +295,7 @@ class ArticlesController extends RestBaseController
         ])->where('table_name', 'portal_post')->count();
 
         if (empty($findFavoriteCount)) {
-            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt')->find();
+            $article = $this->postModel->where(['id' => $articleId])->field('post_title,post_excerpt,more')->find();
             if (empty($article)) {
                 $this->error('文章不存在！');
             }
@@ -301,10 +303,12 @@ class ArticlesController extends RestBaseController
             Db::startTrans();
             try {
                 $this->postModel->where(['id' => $articleId])->setInc('post_favorites');
+                $thumbnail = empty($article['more']['thumbnail']) ? '' : $article['more']['thumbnail'];
                 $userFavoriteModel->insert([
                     'user_id'     => $userId,
                     'object_id'   => $articleId,
                     'table_name'  => 'portal_post',
+                    'thumbnail'   => $thumbnail,
                     'title'       => $article['post_title'],
                     'description' => $article['post_excerpt'],
                     'url'         => json_encode(['action' => 'portal/Article/index', 'param' => ['id' => $articleId, 'cid' => $article['categories'][0]['id']]]),
