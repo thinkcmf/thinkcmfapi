@@ -17,9 +17,13 @@ class CommonModel extends Model
     protected $relationFilter = [];
 
     /**
+     * 内容查询
      * @access public
      * @param array $params 过滤参数
-     * @return array|collection  查询结果
+     * @return array|false|\PDOStatement|string|\think\Collection|Model  查询结果
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function getDatas($params = [])
     {
@@ -118,6 +122,12 @@ class CommonModel extends Model
             }
         }
 
+        if (!empty($params['where']) && !is_string($params['where'])) {
+            if (empty($model)) {
+                $_this->where($params['where']);
+            }
+        }
+
         if (!empty($params['id'])) {
             $id = intval($params['id']);
             if (!empty($id)) {
@@ -126,13 +136,6 @@ class CommonModel extends Model
         } elseif (!empty($ids)) {
             $_this->where('id', 'in', $ids);
         }
-
-        if (!empty($params['where'])) {
-            if (empty($model)) {
-                $_this->where($params['where']);
-            }
-        }
-
 
         // 设置分页
         if (!empty($params['page'])) {
