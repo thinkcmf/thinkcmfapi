@@ -30,7 +30,13 @@ class PagesController extends RestBaseController
         $params                       = $this->request->get();
         $params['where']['post_type'] = 2;
         $data                         = $this->postModel->getDatas($params);
-        $this->success('请求成功!', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data,];
+        } else {
+            $response = $data;
+        }
+        $this->success('请求成功!', $response);
     }
 
     /**
