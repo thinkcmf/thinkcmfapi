@@ -10,9 +10,10 @@
 namespace api\user\controller;
 
 use api\user\model\UserFavoriteModel;
-use cmf\controller\RestUserBaseController;
+use cmf\controller\RestBaseController;
+use think\Validate;
 
-class FavoritesController extends RestUserBaseController
+class FavoritesController extends RestBaseController
 {
     protected $userFavoriteModel;
 
@@ -55,10 +56,12 @@ class FavoritesController extends RestUserBaseController
             $this->error('收藏失败');
         }
         if ($this->userFavoriteModel->where(['user_id' => $this->getUserId(), 'object_id' => $input['object_id']])->where('table_name', $input['table_name'])->count() > 0) {
-            $this->error('已收藏');
+            $this->error('已收藏', ['code' => 1]);
         }
-        if ($this->userFavoriteModel->setFavorite($data)) {
-            $this->success('收藏成功');
+
+        $favoriteId = $this->userFavoriteModel->setFavorite($data);
+        if ($favoriteId) {
+            $this->success('收藏成功', ['id' => $favoriteId]);
         } else {
             $this->error('收藏失败');
         }
@@ -115,6 +118,46 @@ class FavoritesController extends RestUserBaseController
         $this->userFavoriteModel->where(['id' => $id])->delete();
 
         $this->success('取消成功');
+
+    }
+
+    /**
+     * 判断是否已经收藏
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function hasFavorite()
+    {
+        $input = $this->request->param();
+
+        $validate = new Validate([
+            'table_name' => 'require',
+            'object_id'  => 'require',
+        ]);
+
+        if (!$validate->check($input)) {
+            $this->error($validate->getError());
+        }
+
+        $userId = $this->userId;
+
+        if (empty($this->userId)) {
+            $this->error('用户登录');
+        }
+
+
+        $findFavorite = $this->userFavoriteModel->where([
+            'table_name' => $input['table_name'],
+            'user_id'    => $userId,
+            'object_id'  => intval($input['object_id'])
+        ])->find();
+
+        if ($findFavorite) {
+            $this->success('success', $findFavorite);
+        } else {
+            $this->error('用户未收藏');
+        }
 
     }
 }

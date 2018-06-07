@@ -13,9 +13,10 @@
 use think\Route;
 
 Route::get([
-    'user/favorites/my' => 'user/favorites/getFavorites', //获取收藏列表
-    'user/comments/my'  => 'user/comments/getUserComments', //获取我的评论列表
-    'user/comments'     => 'user/comments/getComments', //获评论列表
+    'user/favorites/my'          => 'user/favorites/getFavorites', //获取收藏列表
+    'user/comments/my'           => 'user/comments/getUserComments', //获取我的评论列表
+    'user/comments'              => 'user/comments/getComments', //获评论列表
+    'user/favorites/hasFavorite' => 'user/favorites/hasFavorite' // 判断是否已经收藏
 ]);
 
 Route::post([
