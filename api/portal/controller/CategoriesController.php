@@ -29,7 +29,14 @@ class CategoriesController extends RestBaseController
     {
         $params = $this->request->get();
         $data   = $this->categoryModel->getDatas($params);
-        $this->success('请求成功!', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data,];
+        } else {
+            $response = $data;
+        }
+
+        $this->success('请求成功!', $response);
     }
 
     /**
