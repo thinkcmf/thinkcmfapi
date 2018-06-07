@@ -104,7 +104,7 @@ class ProfileController extends RestUserBaseController
             $this->error($validate->getError());
         }
 
-        if (!preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['mobile'])) {
+        if (!cmf_check_mobile($data['username'])) {
             $this->error("请输入正确的手机格式!");
         }
 

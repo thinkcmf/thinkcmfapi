@@ -16,6 +16,11 @@ use think\Model;
 
 class UserModel extends Model
 {
+    protected $type = [
+        'more' => 'array',
+    ];
+
+
     /**
      * avatar 自动转化
      * @param $value

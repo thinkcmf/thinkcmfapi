@@ -41,7 +41,7 @@ class PublicController extends RestBaseController
         if (Validate::is($data['username'], 'email')) {
             $user['user_email']          = $data['username'];
             $findUserWhere['user_email'] = $data['username'];
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
+        } else if (cmf_check_mobile($data['username'])) {
             $user['mobile']          = $data['username'];
             $findUserWhere['mobile'] = $data['username'];
         } else {
@@ -96,7 +96,7 @@ class PublicController extends RestBaseController
 
         if (Validate::is($data['username'], 'email')) {
             $findUserWhere['user_email'] = $data['username'];
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
+        } else if (cmf_check_mobile($data['username'])) {
             $findUserWhere['mobile'] = $data['username'];
         } else {
             $findUserWhere['user_login'] = $data['username'];
@@ -196,7 +196,7 @@ class PublicController extends RestBaseController
         $userWhere = [];
         if (Validate::is($data['username'], 'email')) {
             $userWhere['user_email'] = $data['username'];
-        } else if (preg_match('/(^(13\d|15[^4\D]|17[013678]|18\d)\d{8})$/', $data['username'])) {
+        } else if (cmf_check_mobile($data['username'])) {
             $userWhere['mobile'] = $data['username'];
         } else {
             $this->error("请输入正确的手机或者邮箱格式!");
