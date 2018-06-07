@@ -37,7 +37,13 @@ class FavoritesController extends RestBaseController
         $param['order'] = '-create_time';
 
         $favoriteData = $this->userFavoriteModel->getDatas($param);
-        $this->success('请求成功', $favoriteData);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $favoriteData,];
+        } else {
+            $response = $favoriteData;
+        }
+        $this->success('请求成功', $response);
     }
 
     /**
