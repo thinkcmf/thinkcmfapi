@@ -14,5 +14,6 @@ Route::get('portal/articles/relatedArticles', 'portal/Articles/relatedArticles')
 Route::post('portal/articles/doLike', 'portal/Articles/doLike');
 Route::get('portal/tags/:id/articles', 'portal/Tags/articles');
 Route::get('portal/tags', 'portal/Tags/index');
+Route::get('portal/tags/hotTags', 'portal/Tags/hotTags');
 
 Route::post('portal/userArticles/deletes', 'portal/UserArticles/deletes');

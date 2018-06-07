@@ -29,7 +29,13 @@ class TagsController extends RestBaseController
     {
         $params = $this->request->get();
         $data   = $this->tagModel->getDatas($params);
-        $this->success('请求成功!', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data,];
+        } else {
+            $response = $data;
+        }
+        $this->success('请求成功!', $response);
     }
 
     /**
@@ -40,7 +46,13 @@ class TagsController extends RestBaseController
         $params                         = $this->request->get();
         $params['where']['recommended'] = 1;
         $data                           = $this->tagModel->getDatas($params);
-        $this->success('请求成功!', $data);
+
+        if (isset($this->apiVersion)) {
+            $response = ['list' => $data,];
+        } else {
+            $response = $data;
+        }
+        $this->success('请求成功!', $response);
     }
 
     /**
