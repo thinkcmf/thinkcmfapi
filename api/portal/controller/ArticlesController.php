@@ -57,6 +57,10 @@ class ArticlesController extends RestBaseController
                 $this->error('文章不存在！');
             } else {
                 $this->postModel->where('id', $id)->setInc('post_hits');
+                $url = cmf_url('portal/Article/index', ['id' => $id, 'cid' => $data['categories'][0]['id']],true,true);
+
+                $data        = $data->toArray();
+                $data['url'] = $url;
                 $this->success('请求成功!', $data);
             }
 
