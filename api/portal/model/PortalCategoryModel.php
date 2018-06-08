@@ -22,7 +22,7 @@ class PortalCategoryModel extends CommonModel
     protected $visible = [
         'id', 'name', 'description', 'post_count',
         'seo_title', 'seo_keywords', 'seo_description',
-        'more', 'PostIds', 'articles'
+	'list_order','more', 'PostIds', 'articles'
     ];
 
     //模型关联方法
