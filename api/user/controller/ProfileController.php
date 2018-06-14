@@ -104,7 +104,7 @@ class ProfileController extends RestUserBaseController
             $this->error($validate->getError());
         }
 
-        if (!cmf_check_mobile($data['username'])) {
+        if (!cmf_check_mobile($data['mobile'])) {
             $this->error("请输入正确的手机格式!");
         }
 
