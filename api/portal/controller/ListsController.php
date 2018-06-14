@@ -55,6 +55,10 @@ class ListsController extends RestBaseController
 
         $param = $this->request->param();
 
+        if(empty($param['order'])){
+            $param['order']='-post.published_time';
+        }
+
         $articles = $portalCategoryModel->paramsFilter($param, $findCategory->articles()->alias('post'))->select();
 
         if (!empty($param['relation'])) {
