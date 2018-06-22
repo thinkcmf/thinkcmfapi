@@ -59,7 +59,7 @@ class ProfileController extends RestUserBaseController
         $validate->message([
             'email.require'             => '请输入您的邮箱!',
             'email.email'               => '请输入正确的邮箱格式!',
-            'email.unique'              => '正确账号已存在!',
+            'email.unique'              => '邮箱账号已存在!',
             'verification_code.require' => '请输入数字验证码!'
         ]);
 
