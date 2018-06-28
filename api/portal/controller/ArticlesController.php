@@ -34,10 +34,10 @@ class ArticlesController extends RestBaseController
         $params['where']['post_type'] = 1;
         $data                         = $this->postModel->getDatas($params);
 
-        if (isset($this->apiVersion)) {
-            $response = ['list' => $data,];
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = $data;
+        } else {
+            $response = ['list' => $data,];
         }
         $this->success('请求成功!', $response);
     }
@@ -78,10 +78,10 @@ class ArticlesController extends RestBaseController
         $userId = $this->getUserId();
         $data   = $this->postModel->getUserArticles($userId, $params);
 
-        if (isset($this->apiVersion)) {
-            $response = ['list' => $data];
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = [$data];
+        } else {
+            $response = ['list' => $data];
         }
 
         $this->success('请求成功!', $response);
@@ -179,10 +179,10 @@ class ArticlesController extends RestBaseController
             ];
             $data            = $this->postModel->getDatas($params);
 
-            if (isset($this->apiVersion)) {
-                $response = ['list' => $data,];
-            } else {
+            if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
                 $response = $data;
+            } else {
+                $response = ['list' => $data,];
             }
 
             $this->success('请求成功!', $response);

@@ -41,10 +41,10 @@ class SlidesController extends RestBaseController
             $this->error('该组幻灯片显示数据为空');
         }
 
-        if (isset($this->apiVersion)) {
-            $response = $data;
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = [$data];
+        } else {
+            $response = $data;
         }
 
         $this->success("该组幻灯片获取成功!", $response);

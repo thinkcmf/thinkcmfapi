@@ -40,10 +40,10 @@ class CommentsController extends RestBaseController
         //处理不同的情况
         $data = $comment->getDatas($map);
 
-        if (isset($this->apiVersion)) {
-            $response = ['list' => $data];
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = [$data];
+        } else {
+            $response = ['list' => $data];
         }
 
         $this->success('请求成功', $response);
@@ -75,10 +75,10 @@ class CommentsController extends RestBaseController
 
         $data = $comment->getDatas($map);
 
-        if (isset($this->apiVersion)) {
-            $response = ['list' => $data];
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = [$data];
+        } else {
+            $response = ['list' => $data];
         }
 
         //数据是否存在

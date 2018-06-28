@@ -38,10 +38,10 @@ class FavoritesController extends RestBaseController
 
         $favoriteData = $this->userFavoriteModel->getDatas($param);
 
-        if (isset($this->apiVersion)) {
-            $response = ['list' => $favoriteData,];
-        } else {
+        if (empty($this->apiVersion) || $this->apiVersion == '1.0.0') {
             $response = $favoriteData;
+        } else {
+            $response = ['list' => $favoriteData,];
         }
         $this->success('请求成功', $response);
     }
