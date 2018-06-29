@@ -4,6 +4,7 @@
 .settings
 .idea
 composer.lock
+/app
 /simplewind
 /data
 /public/plugins/
