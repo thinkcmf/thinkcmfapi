@@ -73,13 +73,16 @@ class TagsController extends RestBaseController
                 ->join('__PORTAL_TAG_POST__ tag_post', 'post.id = tag_post.post_id')
                 ->where(['tag_post.tag_id' => $id])->select();
 
-            $allowedRelations = $postModel->allowedRelations($params['relation']);
-            if (!empty($allowedRelations)) {
-                if (count($articles) > 0) {
-                    $articles->load($allowedRelations);
-                    $articles->append($allowedRelations);
+            if (!empty($params['relation'])) {
+                $allowedRelations = $postModel->allowedRelations($params['relation']);
+                if (!empty($allowedRelations)) {
+                    if (count($articles) > 0) {
+                        $articles->load($allowedRelations);
+                        $articles->append($allowedRelations);
+                    }
                 }
             }
+
 
             $this->success('请求成功!', ['articles' => $articles]);
         }
