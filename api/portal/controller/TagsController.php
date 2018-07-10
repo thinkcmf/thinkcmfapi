@@ -64,13 +64,22 @@ class TagsController extends RestBaseController
         if (intval($id) === 0) {
             $this->error('无效的标签id！');
         } else {
-            $params             = $this->request->param();
-            $params['id']       = $id;
-            $params['relation'] = 'articles';
-            $postModel          = new PortalPostModel();
+            $params    = $this->request->param();
+            $postModel = new PortalPostModel();
 
-            $articles = $postModel->setCondition($params)->alias('a')->join('__PORTAL_TAG_POST__ tp', 'a.id = tp.post_id')
-                ->where(['tag_id' => $id])->select();
+            unset($params['id']);
+
+            $articles = $postModel->paramsFilter($params)->alias('post')
+                ->join('__PORTAL_TAG_POST__ tag_post', 'post.id = tag_post.post_id')
+                ->where(['tag_post.tag_id' => $id])->select();
+
+            $allowedRelations = $postModel->allowedRelations($params['relation']);
+            if (!empty($allowedRelations)) {
+                if (count($articles) > 0) {
+                    $articles->load($allowedRelations);
+                    $articles->append($allowedRelations);
+                }
+            }
 
             $this->success('请求成功!', ['articles' => $articles]);
         }
