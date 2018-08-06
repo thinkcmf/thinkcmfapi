@@ -158,6 +158,14 @@ class PortalPostModel extends CommonModel
             $more['thumbnail'] = cmf_get_image_url($more['thumbnail']);
         }
 
+        if (!empty($more['audio'])) {
+            $more['audio'] = cmf_get_file_download_url($more['audio']);
+        }
+
+        if (!empty($more['video'])) {
+            $more['video'] = cmf_get_file_download_url($more['video']);
+        }
+
         if (!empty($more['photos'])) {
             foreach ($more['photos'] as $key => $value) {
                 $more['photos'][$key]['url'] = cmf_get_image_url($value['url']);
