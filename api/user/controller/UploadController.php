@@ -13,7 +13,7 @@ use think\Db;
 
 class UploadController extends RestUserBaseController
 {
-    // 用户密码修改
+    // 上传一个文件
     public function one()
     {
         $file = $this->request->file('file');
